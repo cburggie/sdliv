@@ -1,0 +1,9 @@
+build/
+
+sdliv
+notes
+
+*.o
+*.swp
+*~
+

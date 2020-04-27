@@ -127,7 +127,7 @@ namespace sdliv
 	{
 		private:
 			static std::map<Uint32,Window*> registeredWindows;
-			static int RegisterWindow(Window * w);
+			static bool RegisterWindow(Window * w);
 			static int UnregisterWindow(Window * w);
 
 		public:
@@ -139,10 +139,6 @@ namespace sdliv
 			Uint32 SDL_windowID;
 			SDL_Renderer *renderer;
 			SDL_Window * window;
-
-			//current window size in pixels
-			int width;
-			int height;
 
 			//layers maps layer number to elements in that layer
 			//layer 1 is active image
@@ -170,8 +166,6 @@ namespace sdliv
 			Element * createElement(int layer = 0);
 			int addElement(Element * e, int layer = 0);
 			int changeElementLayer(Element * e, int layer);
-
-			const int getNewElementID();
 
 			int updateAll();
 			int updateLayer(int layer);
@@ -223,6 +217,7 @@ namespace sdliv
 			int close(); //destroy surface, texture, not renderer
 
 			int setRenderingContext(SDL_Renderer * r);
+			SDL_Renderer * getRenderingContext();
 
 			int createFromSurface(SDL_Surface * s);
 			int createFromImage(const char * path);
@@ -242,6 +237,7 @@ namespace sdliv
 			int getDrawYPos() const;
 
 			int setDrawPosition(int y, int x);
+			int setLayer(int layer);
 			int moveDrawPosition(int dy, int dx);
 
 			int setDrawSize(int w, int h);

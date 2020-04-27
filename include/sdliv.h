@@ -64,9 +64,14 @@ namespace sdliv
 
 			Window * window;
 
+			// pointer to image we are currently viewing
 			Element * active_element;
+
+			// map of all elements we have access to
+			// key is elementID number (should be creation order)
 			std::map<int, Element*> elements;
 
+			// font rendering object for drawing filenames
 			Font * font;
 
 		public:
@@ -81,11 +86,13 @@ namespace sdliv
 			bool OnInit();
 
 			//opens one file and sets it to the active index
+			//returns -1 on fail
 			int openFile(const char * filepath);
 			int openFile(const std::string & filepath);
 
 			//loads all images in path into Element objects stored in `elements`
 			//should do it's work in a separate thread?
+			//return number of opened files
 			int openDirectory(const char * path);
 			int openDirectory(const std::string & path);
 
@@ -103,7 +110,7 @@ namespace sdliv
 			void OnRender();
 
 
-			//destroys cleans up, quits SDL, IMG, and TTF
+			//destroys objects, cleans up, quits SDL, IMG, and TTF
 			void OnCleanup();
 	};
 
@@ -113,20 +120,40 @@ namespace sdliv
 	class Window
 	{
 		private:
-			int ID_count;
+			static std::map<Uint32,Window*> registeredWindows;
+			static int RegisterWindow(Window * w);
+			static int UnregisterWindow(Window * w);
 
+		public:
+			static Window * getWindowByID(Uint32 id);
+
+		private:
+
+			//SDL objects
+			Uint32 SDL_windowID;
 			SDL_Renderer *renderer;
 			SDL_Window * window;
 
+			//current window size in pixels
 			int width;
 			int height;
 
+			//layers maps layer number to elements in that layer
+			//layer 1 is active image
+			//layer 2 could be image filename text
 			std::map<int, std::map<int,Element*>> layers;
+
+			//elements is a map of all elements associated to the window
 			std::map<int, Element*> elements;
 
 		public:
+			//initializer should open a new SDL_Window
 			Window();
-			Window(const Window & w); //this really shouldn't ever get called
+
+			//copy constructor shouldn't really be used, log it!
+			Window(const Window & w);
+
+			//make sure all associated Element objects are closed
 			~Window();
 
 			SDL_Renderer * getRenderingContext();
@@ -159,6 +186,11 @@ namespace sdliv
 	class Element
 	{
 		private:
+			static int Element_ID_count;
+			static int GetNextElementID();
+
+		private:
+			bool hidden;
 			const int ID;
 			int xpos;
 			int ypos;
@@ -179,7 +211,7 @@ namespace sdliv
 			Element();
 			Element(const Element & e);
 			~Element();
-			int close();
+			int close(); //destroy surface, texture, not renderer
 
 			int setRenderingContext(SDL_Renderer * r);
 
@@ -206,7 +238,7 @@ namespace sdliv
 			int setDrawSize(int w, int h);
 			int setDrawScale(double s);
 
-			int update();
+			virtual int update();
 			int draw();
 	};
 
@@ -223,6 +255,7 @@ namespace sdliv
 			static int init();
 			static bool isInit();
 			static int quit();
+		public:
 			static Font * openFont(Window * window, const char * path, int font_size = 12);
 			static Font * openFont(Window * window, const std::string & path, int font_size = 12);
 
@@ -233,6 +266,7 @@ namespace sdliv
 			TTF_Font * font;
 			SDL_Renderer * renderer;
 			SDL_Color c;
+
 
 		public:
 			Font();

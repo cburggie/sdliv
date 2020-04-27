@@ -131,6 +131,25 @@ int sdliv::Element::close()
 
 
 
+int sdliv::Element::setRenderingContext(SDL_Renderer * r)
+{
+	renderer = r;
+	return r != nullptr;
+}
+
+
+
+
+
+SDL_Renderer * sdliv::Element::getRenderingContext()
+{
+	return renderer;
+}
+
+
+
+
+
 int sdliv::Element::createFromSurface(SDL_Surface * s)
 {
 	if (s == NULL)
@@ -328,6 +347,16 @@ int sdliv::Element::getDrawYPos() const
 int sdliv::Element::setDrawPosition(int y, int x)
 {
 	dst_rect.x = x; dst_rect.y = y;
+	return 0;
+}
+
+
+
+
+
+int sdliv::Element::setLayer(int layer)
+{
+	zpos = layer;
 	return 0;
 }
 

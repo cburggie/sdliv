@@ -213,7 +213,7 @@ namespace sdliv
 		public:
 			Element();
 			Element(const Element & e);
-			~Element();
+			virtual ~Element();
 			int close(); //destroy surface, texture, not renderer
 
 			int setRenderingContext(SDL_Renderer * r);

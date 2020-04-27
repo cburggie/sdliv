@@ -1,5 +1,7 @@
 #include <sdliv.h>
 
+std::map<Uint32,sdliv::Window*> sdliv::Window::registeredWindows = std::map<Uint32,sdliv::Window*>();
+
 bool sdliv::Window::RegisterWindow(Window * w)
 {
 	SDL_assert(registeredWindows.count(w->SDL_windowID) == 0);

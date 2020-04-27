@@ -7,3 +7,19 @@ notes
 *.swp
 *~
 
+*.sqlite
+*.json
+/Debug/SDLIV.tlog
+*.dll
+/packages
+/packages.config
+/SDLIV.vcxproj.user
+/SDLIV.vcxproj.filters
+/SDLIV.vcxproj
+/SDLIV.sln
+*.obj
+*.pdb
+*.log
+*.ilk
+*.exe
+*.jpg

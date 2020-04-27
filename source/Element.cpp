@@ -1,7 +1,7 @@
 #ifndef WIN32
 #include <SDL2/SDL.h>
 #else
-
+#include <sdl2.2.0.5\build\native\include\SDL.h>
 #endif
 
 #include <sdliv.h>
@@ -125,6 +125,25 @@ int sdliv::Element::close()
 	}
 
 	return error;
+}
+
+
+
+
+
+int sdliv::Element::setRenderingContext(SDL_Renderer * r)
+{
+	renderer = r;
+	return r != nullptr;
+}
+
+
+
+
+
+SDL_Renderer * sdliv::Element::getRenderingContext()
+{
+	return renderer;
 }
 
 
@@ -328,6 +347,16 @@ int sdliv::Element::getDrawYPos() const
 int sdliv::Element::setDrawPosition(int y, int x)
 {
 	dst_rect.x = x; dst_rect.y = y;
+	return 0;
+}
+
+
+
+
+
+int sdliv::Element::setLayer(int layer)
+{
+	zpos = layer;
 	return 0;
 }
 

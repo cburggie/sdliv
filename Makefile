@@ -38,6 +38,7 @@ OBJ   = ${BLD}/main.o
 OBJ  += ${BLD}/log.o
 OBJ  += ${BLD}/constants.o
 OBJ  += ${BLD}/Window.o
+OBJ  += ${BLD}/Element.o
 OBJ  += ${BLD}/Font.o
 EXE   = sdliv
 
@@ -63,6 +64,9 @@ clean:
 ##### App OBJECT FILES
 
 ${BLD}/Window.o: ${SRC}/Window.cpp ${HDR}
+	${CC} -o $@ -c $<
+
+${BLD}/Element.o: ${SRC}/Element.cpp ${HDR}
 	${CC} -o $@ -c $<
 
 ${BLD}/Font.o: ${SRC}/Font.cpp ${HDR}

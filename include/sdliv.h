@@ -191,7 +191,8 @@ namespace sdliv
 
 		private:
 			bool hidden;
-			const int ID;
+			bool is_copy;
+			int ID;
 			int xpos;
 			int ypos;
 			int zpos;
@@ -200,6 +201,8 @@ namespace sdliv
 			int height;
 
 			double scale;
+			double scale_x;
+			double scale_y;
 
 			SDL_Rect src_rect; //rectangle to draw from in the texture
 			SDL_Rect dst_rect; //rectangle to draw to in the window
@@ -238,6 +241,8 @@ namespace sdliv
 			int setDrawSize(int w, int h);
 			int setDrawScale(double s);
 
+			int show();
+			int hide();
 			virtual int update();
 			int draw();
 	};

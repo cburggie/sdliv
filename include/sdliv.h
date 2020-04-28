@@ -263,10 +263,11 @@ namespace sdliv
 			static bool module_initialized;
 			static int ID_count;
 			static std::map<int,Font*> font_objects;
-			static int init();
 			static bool isInit();
-			static int quit();
 		public:
+			static int init();
+			static int quit();
+
 			static Font * openFont(Window * window, const char * path, int font_size = 12);
 			static Font * openFont(Window * window, const std::string & path, int font_size = 12);
 

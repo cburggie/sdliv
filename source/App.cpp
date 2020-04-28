@@ -43,7 +43,7 @@ bool sdliv::App::OnInit()
 		return true;
 	}
 
-	Uint32 img_init_flags = 0;
+	int img_init_flags = 0;
 	img_init_flags |= IMG_INIT_PNG;
 	img_init_flags |= IMG_INIT_JPG;
 	img_init_flags |= IMG_INIT_TIF;
@@ -77,7 +77,7 @@ int sdliv::App::openFile(const char * filepath)
 	SDL_assert(active_element != nullptr);
 	active_element->createFromImage(filepath);
 
-	elements[active_element->getID()] = activeElement;
+	elements[active_element->getID()] = active_element;
 	window->setSize(active_element->getWidth(), active_element->getHeight());
 	window->centerElement(active_element);
 
@@ -132,7 +132,7 @@ int sdliv::App::OnExecute()
 		}
 		else
 		{
-			OnEvent(&e)
+			OnEvent(&e);
 		}
 	}
 

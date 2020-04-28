@@ -157,6 +157,22 @@ int sdliv::Window::changeElementLayer(sdliv::Element * e, int layer)
 
 
 
+
+
+int sdliv::Window::centerElement(Element * e)
+{
+	SDL_assert(e != nullptr);
+
+	int y_offset = (getHeight() / 2) - (e->getDrawHeight() / 2);
+	int x_offset = (getWidth() / 2) - (e->getDrawWidth() / 2);
+
+	e->setDrawPosition(y_offset, x_offset);
+
+	return 0;
+}
+
+
+
 //iterate over key-value pairs in elements to update all Element objects
 int sdliv::Window::updateAll()
 {

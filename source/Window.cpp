@@ -106,11 +106,13 @@ int sdliv::Window::changeElementLayer(sdliv::Element * e, int layer)
 
 int sdliv::Window::updateAll()
 {
-	for (auto iter = elements.begin();
-		iter != elements.end();
-		++iter)
+	for (const auto& e : elements)
+//	for (const auto& [key, value] : elements)
+//	for (auto iter = elements.begin();
+//		iter != elements.end();
+//		++iter)
 	{
-		iter->second->update();
+		e.second->update();
 	}
 	return 0;
 }

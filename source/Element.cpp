@@ -42,9 +42,9 @@ sdliv::Element::Element()
 	src_rect = { 0,0,0,0 };
 	dst_rect = { 0,0,0,0 };
 
-	surface = NULL;
-	renderer = NULL;
-	texture = NULL;
+	surface = nullptr;
+	renderer = nullptr;
+	texture = nullptr;
 }
 
 
@@ -88,7 +88,7 @@ sdliv::Element::Element(const Element & e)
 
 sdliv::Element::~Element()
 {
-	if (texture != NULL || surface != NULL)
+	if (texture != nullptr || surface != nullptr)
 	{
 		close();
 	}
@@ -108,18 +108,18 @@ int sdliv::Element::close()
 
 	int error = -1;
 
-	if (texture != NULL)
+	if (texture != nullptr)
 	{
 		SDL_DestroyTexture(texture);
-		texture = NULL;
+		texture = nullptr;
 		hidden = true;
 		error = 0;
 	}
 
-	if (surface != NULL)
+	if (surface != nullptr)
 	{
 		SDL_FreeSurface(surface);
-		surface = NULL;
+		surface = nullptr;
 		hidden = true;
 		error = 0;
 	}
@@ -152,17 +152,17 @@ SDL_Renderer * sdliv::Element::getRenderingContext()
 
 int sdliv::Element::createFromSurface(SDL_Surface * s)
 {
-	if (s == NULL)
+	if (s == nullptr)
 	{
 		log("sdliv::Element::createFromSurface() -- passed null parameter");
 		return -1;
 	}
 
 	surface = s;
-	if (renderer != NULL)
+	if (renderer != nullptr)
 	{
 		texture = SDL_CreateTextureFromSurface(renderer,surface);
-		if (texture == NULL)
+		if (texture == nullptr)
 		{
 			log("sdliv::Element::createFromSurface() -- SDL_CreateTextureFromSurface() failed");
 			close();
@@ -197,14 +197,14 @@ int sdliv::Element::createFromImage(const char * path)
 		return -1;
 	}
 
-	if (texture != NULL || surface != NULL)
+	if (texture != nullptr || surface != nullptr)
 	{
 		log("sdliv::Element::createFromImage() called with unclosed texture");
 		close();
 	}
 
 	surface = IMG_Load(path);
-	if (surface == NULL)
+	if (surface == nullptr)
 	{
 		log("sdliv::Element::createFromImage() -- IMG_Load failed");
 		log(path);
@@ -235,13 +235,13 @@ int sdliv::Element::createFromText(Font * font, const char * txt)
 		return -1;
 	}
 
-	if (texture != NULL || surface != NULL)
+	if (texture != nullptr || surface != nullptr)
 	{
 		log("sdliv::Element::createFromText() called with unclosed texture");
 		close();
 	}
 	
-	if (font == NULL)
+	if (font == nullptr)
 	{
 		log("sdliv::Element::createFromText() called with null font parameter");
 		return -1;
@@ -450,7 +450,7 @@ int sdliv::Element::update()
 
 int sdliv::Element::draw()
 {
-	if (renderer == NULL || texture == NULL)
+	if (renderer == nullptr || texture == nullptr)
 	{
 		log("sdliv::Element::draw() called with null renderer or texture member");
 		return -1;

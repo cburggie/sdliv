@@ -13,10 +13,10 @@ BLD  = build
 
 HDR  = ${INC}/sdliv.h
 LIB  = -L/usr/lib
-LIB += -lpthread
 LIB += -lSDL2
 LIB += -lSDL2_image
 LIB += -lSDL2_ttf
+LIB += -lpthread
 
 
 
@@ -37,6 +37,8 @@ CC   = g++ ${COPT}
 OBJ   = ${BLD}/main.o
 OBJ  += ${BLD}/log.o
 OBJ  += ${BLD}/constants.o
+OBJ  += ${BLD}/App.o
+OBJ  += ${BLD}/App_OnEvent.o
 OBJ  += ${BLD}/Window.o
 OBJ  += ${BLD}/Element.o
 OBJ  += ${BLD}/Font.o
@@ -62,6 +64,12 @@ clean:
 
 
 ##### App OBJECT FILES
+
+${BLD}/App.o: ${SRC}/App.cpp ${HDR}
+	${CC} -o $@ -c $<
+
+${BLD}/App_OnEvent.o: ${SRC}/App_OnEvent.cpp ${HDR}
+	${CC} -o $@ -c $<
 
 ${BLD}/Window.o: ${SRC}/Window.cpp ${HDR}
 	${CC} -o $@ -c $<

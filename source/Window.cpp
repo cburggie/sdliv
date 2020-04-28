@@ -42,9 +42,15 @@ sdliv::Window::Window()
 {
 	window = nullptr;
 	renderer = nullptr;
+
 	///**FIXME** verify this works with x=0, y=0
-	SDL_CreateWindowAndRenderer(0, 0, 0, &(window), &(renderer));
+	SDL_CreateWindowAndRenderer(
+			0, 0, 
+			SDL_WINDOW_RESIZABLE, 
+			&(window), &(renderer));
+
 	RegisterWindow(this);
+	setBackgroundColor(0,0,0);
 }
 
 
@@ -157,6 +163,22 @@ int sdliv::Window::changeElementLayer(sdliv::Element * e, int layer)
 
 
 
+
+
+int sdliv::Window::centerElement(Element * e)
+{
+	SDL_assert(e != nullptr);
+
+	int y_offset = (getHeight() / 2) - (e->getDrawHeight() / 2);
+	int x_offset = (getWidth() / 2) - (e->getDrawWidth() / 2);
+
+	e->setDrawPosition(y_offset, x_offset);
+
+	return 0;
+}
+
+
+
 //iterate over key-value pairs in elements to update all Element objects
 int sdliv::Window::updateAll()
 {
@@ -209,7 +231,11 @@ int sdliv::Window::setBackgroundColor(int r, int g, int b, int a)
 {
 	SDL_assert(renderer != nullptr);
 
-	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+	if (SDL_SetRenderDrawColor(renderer, r, g, b, a))
+	{
+		log("sdliv::Window::setBackgroundColor failed");
+		log(SDL_GetError());
+	}
 
 	return 0;
 }

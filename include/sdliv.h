@@ -82,10 +82,10 @@ namespace sdliv
 
 		public:
 
-			//sets pointers to NULL
+			//sets pointers to nullptr
 			App();
 
-			//calls OnCleanup() if anything is not NULL
+			//calls OnCleanup() if anything is not nullptr
 			~App();
 
 			//starts SDL, IMG, TTF makes window and font
@@ -161,11 +161,15 @@ namespace sdliv
 			SDL_Renderer * getRenderingContext();
 			int getWidth() const;
 			int getHeight() const;
+
+			// **FIXME** make sure we obey usable display area
 			int setSize(int w, int h);
 
 			Element * createElement(int layer = 0);
 			int addElement(Element * e, int layer = 0);
 			int changeElementLayer(Element * e, int layer);
+
+			int centerElement(Element * e);
 
 			int updateAll();
 			int updateLayer(int layer);
@@ -259,10 +263,11 @@ namespace sdliv
 			static bool module_initialized;
 			static int ID_count;
 			static std::map<int,Font*> font_objects;
-			static int init();
 			static bool isInit();
-			static int quit();
 		public:
+			static int init();
+			static int quit();
+
 			static Font * openFont(Window * window, const char * path, int font_size = 12);
 			static Font * openFont(Window * window, const std::string & path, int font_size = 12);
 

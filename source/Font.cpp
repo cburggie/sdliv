@@ -49,7 +49,7 @@ int sdliv::Font::quit()
 		int fid = iter->first;
 		Font *f = iter->second;
 
-		if (f != NULL)
+		if (f != nullptr)
 		{
 			f->close();
 			delete f;
@@ -81,7 +81,7 @@ sdliv::Font * sdliv::Font::openFont(Window * w, const char * path, int fs)
 	Font * fp = new Font();
 	fp->font = TTF_OpenFont(path, fs);
 
-	if (fp->font == NULL)
+	if (fp->font == nullptr)
 	{
 		std::string error = "sdliv::Font::openFont() failed at TTF_OpenFont()\n";
 		error += "\tpath was: ";
@@ -89,7 +89,7 @@ sdliv::Font * sdliv::Font::openFont(Window * w, const char * path, int fs)
 		log(error);
 
 		delete fp;
-		return NULL;
+		return nullptr;
 	}
 
 	fp->ID = ++ID_count;
@@ -108,8 +108,8 @@ sdliv::Font::Font()
 	ID = 0;
 	font_height = 0;
 	font_size = 0;
-	font = NULL;
-	renderer = NULL;
+	font = nullptr;
+	renderer = nullptr;
 	c = {255,255,255,255};
 }
 
@@ -120,8 +120,8 @@ sdliv::Font::Font(const Font & f)
 	ID = 0;
 	font_height = 0;
 	font_size = 0;
-	font = NULL;
-	renderer = NULL;
+	font =  nullptr;
+	renderer = nullptr;
 	c = { 255,255,255,255 };
 }
 
@@ -132,13 +132,13 @@ sdliv::Font::Font(const Font & f)
 sdliv::Font::~Font()
 {
 	bool error = false;
-	if (font != NULL)
+	if (font == nullptr)
 	{
 		log("sdliv::Font::~Font() called with null `font` member");
 		error = true;
 	}
 
-	if (renderer != NULL)
+	if (renderer == nullptr)
 	{
 		log("sdliv::Font::~Font() called with null `renderer` member");
 		error = true;
@@ -154,7 +154,7 @@ sdliv::Font::~Font()
 int sdliv::Font::close()
 {
 	bool error = false;
-	if (font == NULL)
+	if (font == nullptr)
 	{
 		log("sdliv::Font::close() called with non-null `font` member");
 		error = true;
@@ -169,8 +169,8 @@ int sdliv::Font::close()
 	if (error) return -1;
 
 	TTF_CloseFont(font);
-	font = NULL;
-	renderer = NULL;
+	font = nullptr;
+	renderer = nullptr;
 	return 0;
 }
 

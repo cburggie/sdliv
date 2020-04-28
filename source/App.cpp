@@ -44,9 +44,14 @@ bool sdliv::App::OnInit()
 	}
 
 	int img_init_flags = 0;
+#ifndef WIN32
 	img_init_flags |= IMG_INIT_PNG;
+#endif
 	img_init_flags |= IMG_INIT_JPG;
+#ifndef WIN32
 	img_init_flags |= IMG_INIT_TIF;
+#endif
+
 	if (img_init_flags != IMG_Init(img_init_flags))
 	{
 		log("sdliv::App::OnInit() -- IMG_Init() failed at least partially");
@@ -58,11 +63,9 @@ bool sdliv::App::OnInit()
 	window = new Window();
 	SDL_assert(window != nullptr);
 
-	/*
 	Font::init();
 	font = Font::openFont(window, constants::font_path);
 	SDL_assert(font != nullptr);
-	*/
 
 	return false;
 }
@@ -115,7 +118,22 @@ int sdliv::App::openDirectory(const std::string & path)
 }
 
 
-
+void sdliv::App::OnEvent(SDL_Event *e)
+{
+	SDL_assert(e != nullptr);
+	switch (e->type)
+	{
+	case SDL_QUIT:
+		Running = false;
+		break;
+	case SDL_WINDOWEVENT:
+//		window->updateAll();
+		OnRender();
+		break;
+	default:
+		break;
+	}
+}
 
 
 int sdliv::App::OnExecute()
@@ -123,15 +141,13 @@ int sdliv::App::OnExecute()
 	Running = true;
 	SDL_Event e;
 
-	log("about to render");
 	OnRender();
 
 	//Custom Timer Events go here
 
 	while (Running)
 	{
-		log("checking for events");
-		if (SDL_WaitEvent(&e))
+		if (SDL_WaitEvent(&e) != 1)
 		{
 			log("sdliv::App::OnExecute() -- SDL_WaitEvent returned error");
 			log(SDL_GetError());
@@ -198,13 +214,11 @@ void sdliv::App::OnCleanup()
 	delete window;
 	window = nullptr;
 
-	/*
 	SDL_assert(font != nullptr);
 	delete font;
 	font = nullptr;
-
 	Font::quit();
-	*/
+
 	IMG_Quit();
 	SDL_Quit();
 }

@@ -82,10 +82,10 @@ namespace sdliv
 
 		public:
 
-			//sets pointers to NULL
+			//sets pointers to nullptr
 			App();
 
-			//calls OnCleanup() if anything is not NULL
+			//calls OnCleanup() if anything is not nullptr
 			~App();
 
 			//starts SDL, IMG, TTF makes window and font

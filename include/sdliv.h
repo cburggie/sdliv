@@ -161,11 +161,15 @@ namespace sdliv
 			SDL_Renderer * getRenderingContext();
 			int getWidth() const;
 			int getHeight() const;
+
+			// **FIXME** make sure we obey usable display area
 			int setSize(int w, int h);
 
 			Element * createElement(int layer = 0);
 			int addElement(Element * e, int layer = 0);
 			int changeElementLayer(Element * e, int layer);
+
+			int centerElement(Element * e);
 
 			int updateAll();
 			int updateLayer(int layer);

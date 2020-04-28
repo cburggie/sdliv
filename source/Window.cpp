@@ -270,6 +270,7 @@ int sdliv::Window::drawElement(sdliv::Element * e) //draws one element
 int sdliv::Window::drawElement(const int ID)
 {
 	SDL_assert(elements.count(ID) > 0);
+	SDL_assert(elements[ID] != nullptr);
 
 	elements[ID]->draw();
 

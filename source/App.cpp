@@ -117,7 +117,7 @@ int sdliv::App::openDirectory(const std::string & path)
 	return openDirectory(path.c_str());
 }
 
-
+/*
 void sdliv::App::OnEvent(SDL_Event *e)
 {
 	SDL_assert(e != nullptr);
@@ -134,7 +134,7 @@ void sdliv::App::OnEvent(SDL_Event *e)
 		break;
 	}
 }
-
+*/
 
 int sdliv::App::OnExecute()
 {

@@ -42,8 +42,13 @@ sdliv::Window::Window()
 {
 	window = nullptr;
 	renderer = nullptr;
+
 	///**FIXME** verify this works with x=0, y=0
-	SDL_CreateWindowAndRenderer(0, 0, 0, &(window), &(renderer));
+	SDL_CreateWindowAndRenderer(
+			0, 0, 
+			SDL_WINDOW_RESIZABLE, 
+			&(window), &(renderer));
+
 	RegisterWindow(this);
 	setBackgroundColor(0,0,0);
 }

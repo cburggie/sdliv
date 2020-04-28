@@ -198,6 +198,7 @@ void sdliv::App::OnCleanup()
 	window = nullptr;
 
 	SDL_assert(font != nullptr);
+	font->close();
 	delete font;
 	font = nullptr;
 	Font::quit();

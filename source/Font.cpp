@@ -43,23 +43,20 @@ int sdliv::Font::quit()
 	}
 
 	//destroy all remaining open font objects
-	while (!font_objects.empty())
+	for (auto && p : font_objects)
 	{
-		auto iter = font_objects.begin();
-		int fid = iter->first;
-		Font *f = iter->second;
-
+		Font * f = p.second;
 		if (f != nullptr)
 		{
 			f->close();
 			delete f;
 		}
-
-		font_objects.erase(fid);
 	}
 
+	font_objects.clear();
 	module_initialized = false;
 	TTF_Quit();
+
 	return 0;
 }
 
@@ -79,6 +76,8 @@ sdliv::Font * sdliv::Font::openFont(Window * w, const std::string & path, int fs
 sdliv::Font * sdliv::Font::openFont(Window * w, const char * path, int fs)
 {
 	Font * fp = new Font();
+	SDL_assert(fp != nullptr);
+
 	fp->font = TTF_OpenFont(path, fs);
 
 	if (fp->font == nullptr)
@@ -97,7 +96,7 @@ sdliv::Font * sdliv::Font::openFont(Window * w, const char * path, int fs)
 	fp->font_size = fs;
 	fp->font_height = TTF_FontHeight(fp->font) + TTF_FontLineSkip(fp->font);
 
-	font_objects.insert(std::pair<int,Font*>(fp->ID,fp));
+	font_objects[fp->ID] = fp;
 
 	return fp;
 }
@@ -132,15 +131,15 @@ sdliv::Font::Font(const Font & f)
 sdliv::Font::~Font()
 {
 	bool error = false;
-	if (font == nullptr)
+	if (font != nullptr)
 	{
-		log("sdliv::Font::~Font() called with null `font` member");
+		log("sdliv::Font::~Font() called with non-null `font` member");
 		error = true;
 	}
 
-	if (renderer == nullptr)
+	if (renderer != nullptr)
 	{
-		log("sdliv::Font::~Font() called with null `renderer` member");
+		log("sdliv::Font::~Font() called with non-null `renderer` member");
 		error = true;
 	}
 
@@ -156,7 +155,7 @@ int sdliv::Font::close()
 	bool error = false;
 	if (font == nullptr)
 	{
-		log("sdliv::Font::close() called with non-null `font` member");
+		log("sdliv::Font::close() called with null `font` member");
 		error = true;
 	}
 
@@ -171,6 +170,8 @@ int sdliv::Font::close()
 	TTF_CloseFont(font);
 	font = nullptr;
 	renderer = nullptr;
+	font_objects.erase(ID);
+
 	return 0;
 }
 

@@ -58,9 +58,11 @@ bool sdliv::App::OnInit()
 	window = new Window();
 	SDL_assert(window != nullptr);
 
+	/*
 	Font::init();
 	font = Font::openFont(window, constants::font_path);
 	SDL_assert(font != nullptr);
+	*/
 
 	return false;
 }
@@ -75,7 +77,10 @@ int sdliv::App::openFile(const char * filepath)
 	active_element = window->createElement();
 
 	SDL_assert(active_element != nullptr);
-	active_element->createFromImage(filepath);
+	if (active_element->createFromImage(filepath))
+	{
+		log("createFromImageFile returned an error code");
+	}
 
 	elements[active_element->getID()] = active_element;
 	window->setSize(active_element->getWidth(), active_element->getHeight());
@@ -118,17 +123,18 @@ int sdliv::App::OnExecute()
 	Running = true;
 	SDL_Event e;
 
+	log("about to render");
 	OnRender();
 
 	//Custom Timer Events go here
 
 	while (Running)
 	{
+		log("checking for events");
 		if (SDL_WaitEvent(&e))
 		{
-			log("sdliv::App::OnExecute() -- SDL_WaidEvent returned error");
+			log("sdliv::App::OnExecute() -- SDL_WaitEvent returned error");
 			log(SDL_GetError());
-			Running = false;
 		}
 		else
 		{
@@ -161,9 +167,21 @@ void sdliv::App::OnRender()
 	SDL_assert(window != nullptr);
 	SDL_assert(active_element != nullptr);
 
-	window->clear();
-	window->drawElement(active_element);
-	window->present();
+	if (window->clear())
+	{
+		log("onrender() failed at window->clear()");
+		log(SDL_GetError());
+	}
+	if (window->drawElement(active_element))
+	{
+		log("onrender() failed at window->drawElement()");
+		log(SDL_GetError());
+	}
+	if (window->present())
+	{
+		log("onrender() failed at window->present()");
+		log(SDL_GetError());
+	}
 }
 
 
@@ -180,11 +198,13 @@ void sdliv::App::OnCleanup()
 	delete window;
 	window = nullptr;
 
+	/*
 	SDL_assert(font != nullptr);
 	delete font;
 	font = nullptr;
 
 	Font::quit();
+	*/
 	IMG_Quit();
 	SDL_Quit();
 }

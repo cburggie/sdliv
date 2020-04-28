@@ -13,10 +13,10 @@ BLD  = build
 
 HDR  = ${INC}/sdliv.h
 LIB  = -L/usr/lib
-LIB += -lpthread
 LIB += -lSDL2
 LIB += -lSDL2_image
 LIB += -lSDL2_ttf
+LIB += -lpthread
 
 
 

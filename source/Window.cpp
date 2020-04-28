@@ -45,6 +45,7 @@ sdliv::Window::Window()
 	///**FIXME** verify this works with x=0, y=0
 	SDL_CreateWindowAndRenderer(0, 0, 0, &(window), &(renderer));
 	RegisterWindow(this);
+	setBackgroundColor(0,0,0);
 }
 
 
@@ -225,7 +226,11 @@ int sdliv::Window::setBackgroundColor(int r, int g, int b, int a)
 {
 	SDL_assert(renderer != nullptr);
 
-	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+	if (SDL_SetRenderDrawColor(renderer, r, g, b, a))
+	{
+		log("sdliv::Window::setBackgroundColor failed");
+		log(SDL_GetError());
+	}
 
 	return 0;
 }

@@ -181,6 +181,8 @@ namespace sdliv
 			int getWidth() const;
 			int getHeight() const;
 
+			SDL_Window* getWindow() const;
+
 			// **FIXME** make sure we obey usable display area
 			int setSize(int w, int h);
 

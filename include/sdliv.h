@@ -53,6 +53,24 @@ namespace sdliv
 		extern const int window_minimum_height;
 	}
 
+	typedef enum {
+		FILETYPE_ICO,
+		FILETYPE_CUR,
+		FILETYPE_BMP,
+		FILETYPE_GIF,
+		FILETYPE_LBM,
+		FILETYPE_PCX,
+		FILETYPE_PNG,
+		FILETYPE_PNM,
+		FILETYPE_SVG,
+		FILETYPE_TGA,
+		FILETYPE_TIF,
+		FILETYPE_XCF,
+		FILETYPE_XPM,
+		FILETYPE_XV,
+		FILETYPE_WEBP
+	} ImageFileType;
+
 	class App;
 	class Window;
 	class Element;

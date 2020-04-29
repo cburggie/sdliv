@@ -23,7 +23,7 @@ LIB += -lpthread
 
 ##### COMPILER OPTIONS
 
-CFLG = -Wall -std=c++11 -g
+CFLG = -Wall -std=c++17 -g
 CINC = -I${INC}
 COPT = ${CFLG} ${CINC}
 CC   = g++ ${COPT}

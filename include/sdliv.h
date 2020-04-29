@@ -353,7 +353,7 @@ namespace sdliv
 			static int untrack(const std::string & filename);
 
 			//begin tracking all files in a directory
-			static int openDirectory();
+			static int openDirectory(std::filesystem::path & p);
 
 			//get the Element object for the current active image file
 			static Element * getActiveImage();

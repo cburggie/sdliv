@@ -87,6 +87,7 @@ int sdliv::App::openFile(const char * filepath)
 
 	elements[active_element->getID()] = active_element;
 	window->setSize(active_element->getWidth(), active_element->getHeight());
+	SDL_ShowWindow(window->getWindow());
 	window->centerElement(active_element);
 
 	return 0;

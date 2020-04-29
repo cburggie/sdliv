@@ -161,6 +161,9 @@ int sdliv::Element::createFromSurface(SDL_Surface * s)
 	surface = s;
 	if (renderer != nullptr)
 	{
+		if (texture != nullptr) {
+			SDL_DestroyTexture(texture);
+		}
 		texture = SDL_CreateTextureFromSurface(renderer,surface);
 		if (texture == nullptr)
 		{

@@ -151,6 +151,7 @@ namespace sdliv
 
 		public:
 			static Window * getWindowByID(Uint32 id);
+			static Window * getFirstWindow();
 
 		private:
 
@@ -332,20 +333,38 @@ namespace sdliv
 			//return nullptr if unsupported file type
 			static FileHandler* openFileIfSupported(const char * filename);
 			static FileHandler* openFileIfSupported(const std::string & filename);
+
+			static int track(FileHandler * fh);
+			static int untrack(FileHandler * fh);
+			static int untrack(const char * filename);
+			static int untrack(const std::string & filename);
+
 			static int openDirectory();
 			static Element * getActiveImage();
+			static Element * nextImage();
+			static Element * prevImage();
 
 		private:
 			ImageFileType type;
-			int ID;
 			const char * filename;
 			SDL_RWops * rwops;
+			Window * window;
 			Element * element;
 
 
 		public:
 			FileHandler();
 
+			FileHandler(const char * filename);
+			FileHandler(const std::string & filename);
+
+			FileHandler(const FileHandler & fh);
+
+			~FileHandler();
+
+			int open();
+			int read();
+			int close();
 	};
 
 } //end namespace sdliv

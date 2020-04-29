@@ -13,6 +13,7 @@
 
 #include <map>
 #include <string>
+#include <filesystem>
 
 
 
@@ -76,6 +77,7 @@ namespace sdliv
 	class Window;
 	class Element;
 	class Font;
+	class FileHandler;
 
 	void log(const char * text);
 	void log(const std::string & text);
@@ -347,7 +349,12 @@ namespace sdliv
 		private:
 			ImageFileType type;
 			const char * filename;
+
 			SDL_RWops * rwops;
+
+			std::filesystem::directory_entry fs_entry;
+			std::filesystem::file_time_type timestamp;
+
 			Window * window;
 			Element * element;
 
@@ -362,6 +369,7 @@ namespace sdliv
 
 			~FileHandler();
 
+			ImageFileType detectImageType();
 			int open();
 			int read();
 			int close();

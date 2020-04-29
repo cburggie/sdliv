@@ -26,7 +26,7 @@ LIB += -lpthread
 CFLG = -Wall -std=c++17 -g
 CINC = -I${INC}
 COPT = ${CFLG} ${CINC}
-CC   = g++ ${COPT}
+CC   = g++-8 ${COPT}
 
 
 

@@ -323,28 +323,27 @@ namespace sdliv
 	class FileHandler
 	{
 		private:
-			static std::map<int,FileHandler*> open_handles;
-			static int id_counter;
+			static std::map<std::string,FileHandler*> tracked_files;
+			static FileHandler * active_image;
+
 		public:
 			//return nullptr if unsupported file type
-			static FileHandler * openFileIfSupported(const char * filename);
-			static FileHandler * openFileIfSupported(const std::string & filename);
+			static FileHandler* openFileIfSupported(const char * filename);
+			static FileHandler* openFileIfSupported(const std::string & filename);
+			static int openDirectory();
+			static Element * getActiveImage();
 
 		private:
-			int ID;
 			ImageFileType type;
+			int ID;
 			const char * filename;
 			SDL_RWops * rwops;
-			FileHandler();
+			Element * element;
+
+
 		public:
-			FileHandler(const FileHandler & fh);
-			~FileHandler();
+			FileHandler();
 
-			//return error if unsupported file type
-			int open(const char * filename);
-			int open(const std::string & filename);
-
-			SDL_RWops * getHandle();
 	};
 
 } //end namespace sdliv

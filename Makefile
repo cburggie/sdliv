@@ -34,15 +34,17 @@ CC   = g++ ${COPT}
 
 ##### BUILD OBJECTS 
 
-OBJ   = ${BLD}/main.o
-OBJ  += ${BLD}/log.o
-OBJ  += ${BLD}/constants.o
-OBJ  += ${BLD}/App.o
-OBJ  += ${BLD}/App_OnEvent.o
-OBJ  += ${BLD}/Window.o
-OBJ  += ${BLD}/Element.o
-OBJ  += ${BLD}/Font.o
-EXE   = sdliv
+OBJ  = ${BLD}/main.o
+OBJ += ${BLD}/log.o
+OBJ += ${BLD}/constants.o
+OBJ += ${BLD}/App.o
+OBJ += ${BLD}/App_OnEvent.o
+OBJ += ${BLD}/Window.o
+OBJ += ${BLD}/Element.o
+OBJ += ${BLD}/Font.o
+OBJ += ${BLD}/FileHandler.o
+
+EXE  = sdliv
 
 
 
@@ -80,6 +82,8 @@ ${BLD}/Element.o: ${SRC}/Element.cpp ${HDR}
 ${BLD}/Font.o: ${SRC}/Font.cpp ${HDR}
 	${CC} -o $@ -c $<
 
+${BLD}/FileHandler.o: ${SRC}/FileHandler.cpp ${HDR}
+	${CC} -o $@ -c $<
 
 
 

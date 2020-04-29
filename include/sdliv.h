@@ -54,6 +54,7 @@ namespace sdliv
 	}
 
 	typedef enum {
+		FILETYPE_UNSUPPORTED,
 		FILETYPE_ICO,
 		FILETYPE_CUR,
 		FILETYPE_BMP,
@@ -314,6 +315,38 @@ namespace sdliv
 			SDL_Surface * renderText(const char * txt);
 			SDL_Surface * renderText(const std::string & txt);
 	};
-}
+
+
+
+
+
+	class FileHandler
+	{
+		private:
+			static std::map<int,FileHandler*> open_handles;
+			static int id_counter;
+		public:
+			//return nullptr if unsupported file type
+			static FileHandler * openFileIfSupported(const char * filename);
+			static FileHandler * openFileIfSupported(const std::string & filename);
+
+		private:
+			int ID;
+			ImageFileType type;
+			const char * filename;
+			SDL_RWops * rwops;
+			FileHandler();
+		public:
+			FileHandler(const FileHandler & fh);
+			~FileHandler();
+
+			//return error if unsupported file type
+			int open(const char * filename);
+			int open(const std::string & filename);
+
+			SDL_RWops * getHandle();
+	};
+
+} //end namespace sdliv
 
 #endif

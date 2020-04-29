@@ -91,10 +91,10 @@ ${BLD}/FileHandler.o: ${SRC}/FileHandler.cpp ${HDR}
 ##### MISC OBJECT FILES
 
 ${BLD}/constants.o: ${SRC}/constants.cpp ${HDR}
-	${CC}/ -o $@ -c $<
+	${CC} -o $@ -c $<
 
 ${BLD}/log.o: ${SRC}/log.cpp ${HDR}
-	${CC}/ -o $@ -c $<
+	${CC} -o $@ -c $<
 
 ${BLD}/main.o: ${SRC}/main.cpp ${HDR}
 	${CC} -o $@ -c $<

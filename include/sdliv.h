@@ -324,12 +324,19 @@ namespace sdliv
 
 
 
-
+/* FileHandler handles all the file io and tracking
+ *   It should track files in the directory and load them asynchronously
+ *   (eventually), untrack files that get deleted (and unload associated
+ *   assets), and reload files that have updated since they were loaded.
+ * */
 
 	class FileHandler
 	{
 		private:
+			//master list of all FileHandler instances sorted by filename
 			static std::map<std::string,FileHandler*> tracked_files;
+
+			//the active image file that we're viewing in our app
 			static FileHandler * active_image;
 
 		public:
@@ -337,14 +344,24 @@ namespace sdliv
 			static FileHandler* openFileIfSupported(const char * filename);
 			static FileHandler* openFileIfSupported(const std::string & filename);
 
+			//start tracking fh in tracked_files
 			static int track(FileHandler * fh);
+
+			//stop tracking fh in tracked files
 			static int untrack(FileHandler * fh);
 			static int untrack(const char * filename);
 			static int untrack(const std::string & filename);
 
+			//begin tracking all files in a directory
 			static int openDirectory();
+
+			//get the Element object for the current active image file
 			static Element * getActiveImage();
+
+			//advance to the next tracked image file
 			static Element * nextImage();
+
+			//backup to the previous tracked image file
 			static Element * prevImage();
 
 		private:
@@ -359,21 +376,32 @@ namespace sdliv
 			std::filesystem::file_time_type timestamp;
 
 		public:
+			//null and zero values
 			FileHandler();
 
+			//calls setTarget(filename)
 			FileHandler(const char * filename);
 			FileHandler(const std::string & filename);
 
+			//we should log this because these wont like being copied bitwise
 			FileHandler(const FileHandler & fh);
 
+			//make sure rwops is closed, destroy element object
 			~FileHandler();
 
+			//sets filename and fills fs_entry and timestamp info
+			//infers type from filename
 			int setTarget(const char *filename);
 			int setTarget(const std::string & filename);
 
+			//opens file briefly and uses IMG_isX() to discover image type
 			ImageFileType detectImageType();
+
+			//create rwops or return error
 			int open();
+			//create element from existing rwops or return error
 			int read();
+			//destroy rwops or return error if already null
 			int close();
 	};
 

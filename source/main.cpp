@@ -10,6 +10,16 @@ int main(int argc, char * argv[])
 {
 	sdliv::App app;
 	app.OnInit();
-	app.openFile(image_path);
+
+	if (argc > 1)
+	{
+		app.openFile(argv[1]);
+	}
+
+	else
+	{
+		app.openFile(image_path);
+	}
+
 	return app.OnExecute();
 }

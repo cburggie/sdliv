@@ -76,6 +76,7 @@ bool sdliv::App::OnInit()
 
 int sdliv::App::openFile(const char * filepath)
 {
+	int error = 0;
 	SDL_assert(window != nullptr);
 	active_element = window->createElement();
 
@@ -83,13 +84,14 @@ int sdliv::App::openFile(const char * filepath)
 	if (active_element->createFromImage(filepath))
 	{
 		log("createFromImageFile returned an error code");
+		error = 1;
 	}
 
 	elements[active_element->getID()] = active_element;
 	window->setSize(active_element->getWidth(), active_element->getHeight());
 	window->centerElement(active_element);
 
-	return 0;
+	return error;
 }
 
 

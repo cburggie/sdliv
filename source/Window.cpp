@@ -43,10 +43,9 @@ sdliv::Window::Window()
 	window = nullptr;
 	renderer = nullptr;
 
-	///**FIXME** verify this works with x=0, y=0
 	SDL_CreateWindowAndRenderer(
 			0, 0, 
-			SDL_WINDOW_RESIZABLE, 
+			SDL_WINDOW_HIDDEN, 
 			&(window), &(renderer));
 
 	RegisterWindow(this);
@@ -105,6 +104,11 @@ int sdliv::Window::getHeight() const
 	SDL_GetWindowSize(window, nullptr, &h);
 
 	return h;
+}
+
+SDL_Window * sdliv::Window::getWindow() const
+{
+	return window;
 }
 
 

@@ -54,7 +54,8 @@ namespace sdliv
 		extern const int window_minimum_height;
 	}
 
-	typedef enum {
+	typedef enum
+	{
 		FILETYPE_UNSUPPORTED,
 		FILETYPE_ICO,
 		FILETYPE_CUR,
@@ -348,16 +349,14 @@ namespace sdliv
 
 		private:
 			ImageFileType type;
+
 			const char * filename;
-
 			SDL_RWops * rwops;
-
-			std::filesystem::directory_entry fs_entry;
-			std::filesystem::file_time_type timestamp;
-
 			Window * window;
 			Element * element;
 
+			std::filesystem::directory_entry fs_entry;
+			std::filesystem::file_time_type timestamp;
 
 		public:
 			FileHandler();
@@ -368,6 +367,9 @@ namespace sdliv
 			FileHandler(const FileHandler & fh);
 
 			~FileHandler();
+
+			int setTarget(const char *filename);
+			int setTarget(const std::string & filename);
 
 			ImageFileType detectImageType();
 			int open();

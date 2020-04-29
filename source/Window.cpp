@@ -45,7 +45,7 @@ sdliv::Window::Window()
 
 	SDL_CreateWindowAndRenderer(
 			0, 0, 
-			SDL_WINDOW_HIDDEN, 
+			SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE, 
 			&(window), &(renderer));
 
 	RegisterWindow(this);

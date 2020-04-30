@@ -8,7 +8,6 @@ sdliv::App::App()
 {
 	Running = false;
 	active_element = nullptr;
-	elements = std::map<int,Element*>();
 	window = nullptr;
 	font = nullptr;
 }
@@ -76,23 +75,26 @@ bool sdliv::App::OnInit()
 
 int sdliv::App::openFile(const char * filepath)
 {
-	int error = 0;
-	SDL_assert(window != nullptr);
-	active_element = window->createElement();
-
-	SDL_assert(active_element != nullptr);
-	if (active_element->createFromImage(filepath))
+	FileHandler * fh = FileHandler::openFileIfSupported(filepath);
+	if (fh == nullptr)
 	{
-		log("createFromImageFile returned an error code");
-		error = 1;
+		log("sdliv::App::openFile() -- file type not supported",filepath);
+		return -1;
 	}
 
-	elements[active_element->getID()] = active_element;
+	if (active_element != nullptr)
+	{
+		active_element->hide();
+	}
+
+	active_element = FileHandler::getActiveImage();
+	SDL_assert(active_element != nullptr);
+
 	window->setSize(active_element->getWidth(), active_element->getHeight());
 	SDL_ShowWindow(window->getWindow());
 	window->centerElement(active_element);
 
-	return error;
+	return 0;
 }
 
 
@@ -105,20 +107,6 @@ int sdliv::App::openFile(const std::string & s)
 }
 
 
-
-
-
-int sdliv::App::openDirectory(const char * path)
-{
-	// **FIXME** implement this
-	return 0;
-}
-
-
-int sdliv::App::openDirectory(const std::string & path)
-{
-	return openDirectory(path.c_str());
-}
 
 
 
@@ -135,9 +123,9 @@ int sdliv::App::OnExecute()
 	{
 		if (SDL_WaitEvent(&e) != 1)
 		{
-			log("sdliv::App::OnExecute() -- SDL_WaitEvent returned error");
-			log(SDL_GetError());
+			log("sdliv::App::OnExecute() -- SDL_WaitEvent returned error",SDL_GetError());
 		}
+
 		else
 		{
 			OnEvent(&e);
@@ -192,7 +180,7 @@ void sdliv::App::OnRender()
 
 void sdliv::App::OnCleanup()
 {
-	elements.clear();
+	FileHandler::untrackAll();
 
 	active_element = nullptr;
 

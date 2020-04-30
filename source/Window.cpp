@@ -39,7 +39,11 @@ sdliv::Window* sdliv::Window::getWindowByID(Uint32 id)
 
 sdliv::Window* sdliv::Window::getFirstWindow()
 {
-	if (registeredWindows.size() > 0) return nullptr;
+	if (registeredWindows.size() == 0)
+	{
+		log("sdliv::Window::getFirstWindow() -- no registered Windows");
+		return nullptr;
+	}
 
 	return registeredWindows.begin()->second;
 }

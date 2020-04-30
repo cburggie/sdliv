@@ -84,7 +84,9 @@ namespace sdliv
 	class FileHandler;
 
 	void log(const char * text, const char * arg = nullptr);
+	void log(const char * text, const std::string & arg);
 	void log(const std::string & text, const char * arg = nullptr);
+	void log(const std::string & text, const std::string & arg);
 
 
 
@@ -97,10 +99,6 @@ namespace sdliv
 
 			// pointer to image we are currently viewing
 			Element * active_element;
-
-			// map of all elements we have access to
-			// key is elementID number (should be creation order)
-			std::map<int, Element*> elements;
 
 			// font rendering object for drawing filenames
 			Font * font;
@@ -116,16 +114,10 @@ namespace sdliv
 			//starts SDL, IMG, TTF makes window and font
 			bool OnInit();
 
-			//opens one file and sets it to the active index
+			//opens one file and sets it to the active image
 			//returns -1 on fail
 			int openFile(const char * filepath);
 			int openFile(const std::string & filepath);
-
-			//loads all images in path into Element objects stored in `elements`
-			//should do it's work in a separate thread?
-			//return number of opened files
-			int openDirectory(const char * path);
-			int openDirectory(const std::string & path);
 
 			//handles main loop
 			int OnExecute();
@@ -355,6 +347,7 @@ namespace sdliv
 			static int untrack(FileHandler * fh);
 			static int untrack(const char * filename);
 			static int untrack(const std::string & filename);
+			static int untrackAll();
 
 			//begin tracking all files in a directory
 			static int openDirectory();

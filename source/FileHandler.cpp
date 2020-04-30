@@ -31,6 +31,15 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filenam
 		return nullptr;
 	}
 
+	if (tracked_files.count(fh->filename) > 0)
+	{
+		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked",fh->filename);
+		untrack(fh->filename);
+	}
+
+	track(fh);
+	active_image = fh;
+
 	return fh;
 }
 
@@ -92,6 +101,22 @@ int sdliv::FileHandler::untrack(const char * filename)
 int sdliv::FileHandler::untrack(const std::string & filename)
 {
 	return untrack(filename.c_str());
+}
+
+
+
+
+
+int sdliv::FileHandler::untrackAll()
+{
+	int error = 0;
+
+	for (auto & p : tracked_files)
+	{
+		error |= untrack(p.first.c_str());
+	}
+
+	return error;
 }
 
 
@@ -284,6 +309,7 @@ int sdliv::FileHandler::setTarget(const char * fn)
 		filename = "";
 	}
 	timestamp = fs_entry.last_write_time();
+	type = detectImageType();
 	return 0;
 }
 
@@ -305,7 +331,7 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 	bool close_when_done = false;
 	if (rwops == nullptr)
 	{
-		if (!open())
+		if (open())
 		{
 			type = FILETYPE_UNSUPPORTED;
 			return type;
@@ -392,6 +418,7 @@ int sdliv::FileHandler::read()
 
 	if (element != nullptr)
 	{
+		log("sdliv::FileHandler::read() -- deleting old element");
 		if (window != nullptr) window->removeElement(element);
 		delete element;
 		element = nullptr;

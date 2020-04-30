@@ -44,12 +44,19 @@ sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 //static methods
 sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filename)
 {
+	if (active_image != nullptr && active_image->filename.compare(filename) == 0)
+	{
+		return active_image;
+	}
+
 	if (!has_valid_extension(filename))
 	{
 		log("sdliv::FileHandler::openFileIfSupported() -- file extension not supported", filename);
 		return nullptr;
 	}
+
 	FileHandler * fh = new FileHandler(filename);
+
 	if (fh == nullptr)
 	{
 		log("sdliv::FileHandler::openFileIfSupported() -- failed to allocate FileHandler");
@@ -123,7 +130,12 @@ int sdliv::FileHandler::untrack(const char * filename)
 		return -1;
 	}
 
+	FileHandler * fh = tracked_files[filename];
+	if (fh != nullptr) delete fh;
+	fh = nullptr;
+
 	tracked_files.erase(filename);
+
 	return 0;
 }
 
@@ -165,11 +177,14 @@ int sdliv::FileHandler::openDirectory()
 
 	for (auto& f: std::filesystem::directory_iterator(std::filesystem::current_path()))
 	{
-		FileHandler * fh = openFileIfSupported(f.path().filename().string());
-
-		if (fh != nullptr)
+		if (f.is_regular_file())
 		{
-			count++;
+			FileHandler * fh = openFileIfSupported(f.path().filename().string());
+
+			if (fh != nullptr)
+			{
+				count++;
+			}
 		}
 	}
 

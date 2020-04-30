@@ -357,7 +357,7 @@ namespace sdliv
 			static int untrack(const std::string & filename);
 
 			//begin tracking all files in a directory
-			static int openDirectory(std::filesystem::path & p);
+			static int openDirectory();
 
 			//get the Element object for the current active image file
 			static Element * getActiveImage();
@@ -399,6 +399,9 @@ namespace sdliv
 
 			//make sure rwops is closed, destroy element object
 			~FileHandler();
+
+			//read image data if file has been updated or if it hasn't been read
+			int update();
 
 			//sets filename and fills fs_entry and timestamp info
 			//infers type from filename

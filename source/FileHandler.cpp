@@ -18,8 +18,20 @@ sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 //static methods
 sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filename)
 {
-	// **FIXME**
-	return nullptr;
+	FileHandler * fh = new FileHandler(filename);
+	if (fh == nullptr)
+	{
+		log("sdliv::FileHandler::openFileIfSupported() -- failed to allocate FileHandler");
+		return nullptr;
+	}
+
+	if (fh->type == FILETYPE_UNSUPPORTED)
+	{
+		delete fh;
+		return nullptr;
+	}
+
+	return fh;
 }
 
 
@@ -29,8 +41,7 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filenam
 
 sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::string & filename)
 {
-	// **FIXME**
-	return nullptr;
+	return openFileIfSupported(filename.c_str());
 }
 
 
@@ -89,8 +100,20 @@ int sdliv::FileHandler::untrack(const std::string & filename)
 
 int sdliv::FileHandler::openDirectory()
 {
-	// **FIXME**
-	return -1;
+	int count = 0;
+
+	for (auto& f: std::filesystem::directory_iterator(std::filesystem::current_path()))
+	{
+		FileHandler * fh = openFileIfSupported(f.path().filename().string());
+
+		if (fh != nullptr)
+		{
+			track(fh);
+			count++;
+		}
+	}
+
+	return count;
 }
 
 
@@ -99,7 +122,11 @@ int sdliv::FileHandler::openDirectory()
 
 sdliv::Element * sdliv::FileHandler::getActiveImage()
 {
-	return (active_image == nullptr) ? nullptr : active_image->element;
+	if (active_image == nullptr) return nullptr;
+
+	active_image->update();
+
+	return active_image->element;
 }
 
 
@@ -249,7 +276,7 @@ int sdliv::FileHandler::setTarget(const char * fn)
 {
 	//filename is _not_ the full path
 	std::filesystem::path p = std::filesystem::current_path() / fn;
-	filename = p.filename();
+	filename = p.filename().string().c_str();
 	fs_entry = std::filesystem::directory_entry(p);
 	if (!fs_entry.exists() || !fs_entry.is_regular_file())
 	{
@@ -312,9 +339,26 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 
 
 
+int sdliv::FileHandler::update()
+{
+	if (element == nullptr || fs_entry.last_write_time() > timestamp)
+	{
+		open();
+		read();
+		close();
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
+
+
 int sdliv::FileHandler::open()
 {
-	rwops = SDL_RWFromFile(fs_entry.path().c_str(), "rb");
+	rwops = SDL_RWFromFile(fs_entry.path().string().c_str(), "rb");
 	return (rwops == nullptr) ? -1 : 0;
 }
 

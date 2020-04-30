@@ -17,6 +17,7 @@ LIB += -lSDL2
 LIB += -lSDL2_image
 LIB += -lSDL2_ttf
 LIB += -lpthread
+LIB += -lstdc++fs
 
 
 
@@ -26,7 +27,7 @@ LIB += -lpthread
 CFLG = -Wall -std=c++17 -g
 CINC = -I${INC}
 COPT = ${CFLG} ${CINC}
-CC   = g++ ${COPT}
+CC   = g++-8 ${COPT}
 
 
 
@@ -34,15 +35,18 @@ CC   = g++ ${COPT}
 
 ##### BUILD OBJECTS 
 
-OBJ   = ${BLD}/main.o
-OBJ  += ${BLD}/log.o
-OBJ  += ${BLD}/constants.o
-OBJ  += ${BLD}/App.o
-OBJ  += ${BLD}/App_OnEvent.o
-OBJ  += ${BLD}/Window.o
-OBJ  += ${BLD}/Element.o
-OBJ  += ${BLD}/Font.o
-EXE   = sdliv
+OBJ  = ${BLD}/main.o
+OBJ += ${BLD}/util.o
+OBJ += ${BLD}/log.o
+OBJ += ${BLD}/constants.o
+OBJ += ${BLD}/App.o
+OBJ += ${BLD}/App_OnEvent.o
+OBJ += ${BLD}/Window.o
+OBJ += ${BLD}/Element.o
+OBJ += ${BLD}/Font.o
+OBJ += ${BLD}/FileHandler.o
+
+EXE  = sdliv
 
 
 
@@ -80,6 +84,8 @@ ${BLD}/Element.o: ${SRC}/Element.cpp ${HDR}
 ${BLD}/Font.o: ${SRC}/Font.cpp ${HDR}
 	${CC} -o $@ -c $<
 
+${BLD}/FileHandler.o: ${SRC}/FileHandler.cpp ${HDR}
+	${CC} -o $@ -c $<
 
 
 
@@ -87,10 +93,13 @@ ${BLD}/Font.o: ${SRC}/Font.cpp ${HDR}
 ##### MISC OBJECT FILES
 
 ${BLD}/constants.o: ${SRC}/constants.cpp ${HDR}
-	${CC}/ -o $@ -c $<
+	${CC} -o $@ -c $<
 
 ${BLD}/log.o: ${SRC}/log.cpp ${HDR}
-	${CC}/ -o $@ -c $<
+	${CC} -o $@ -c $<
+
+${BLD}/util.o: ${SRC}/util.cpp ${HDR}
+	${CC} -o $@ -c $<
 
 ${BLD}/main.o: ${SRC}/main.cpp ${HDR}
 	${CC} -o $@ -c $<

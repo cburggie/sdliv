@@ -13,6 +13,7 @@
 
 #include <map>
 #include <string>
+#include <filesystem>
 
 
 
@@ -41,6 +42,8 @@
 
 
 
+bool operator<(const std::string & a, std::string & b);
+
 
 
 namespace sdliv
@@ -53,13 +56,37 @@ namespace sdliv
 		extern const int window_minimum_height;
 	}
 
+	typedef enum
+	{
+		FILETYPE_UNSUPPORTED,
+		FILETYPE_ICO,
+		FILETYPE_CUR,
+		FILETYPE_BMP,
+		FILETYPE_GIF,
+		FILETYPE_JPG,
+		FILETYPE_LBM,
+		FILETYPE_PCX,
+		FILETYPE_PNG,
+		FILETYPE_PNM,
+		FILETYPE_SVG,
+		FILETYPE_TGA,
+		FILETYPE_TIF,
+		FILETYPE_XCF,
+		FILETYPE_XPM,
+		FILETYPE_XV,
+		FILETYPE_WEBP
+	} ImageFileType;
+
 	class App;
 	class Window;
 	class Element;
 	class Font;
+	class FileHandler;
 
-	void log(const char * text);
-	void log(const std::string & text);
+	void log(const char * text, const char * arg = nullptr);
+	void log(const char * text, const std::string & arg);
+	void log(const std::string & text, const char * arg = nullptr);
+	void log(const std::string & text, const std::string & arg);
 
 
 
@@ -72,10 +99,6 @@ namespace sdliv
 
 			// pointer to image we are currently viewing
 			Element * active_element;
-
-			// map of all elements we have access to
-			// key is elementID number (should be creation order)
-			std::map<int, Element*> elements;
 
 			// font rendering object for drawing filenames
 			Font * font;
@@ -91,16 +114,10 @@ namespace sdliv
 			//starts SDL, IMG, TTF makes window and font
 			bool OnInit();
 
-			//opens one file and sets it to the active index
+			//opens one file and sets it to the active image
 			//returns -1 on fail
 			int openFile(const char * filepath);
 			int openFile(const std::string & filepath);
-
-			//loads all images in path into Element objects stored in `elements`
-			//should do it's work in a separate thread?
-			//return number of opened files
-			int openDirectory(const char * path);
-			int openDirectory(const std::string & path);
 
 			//handles main loop
 			int OnExecute();
@@ -132,6 +149,7 @@ namespace sdliv
 
 		public:
 			static Window * getWindowByID(Uint32 id);
+			static Window * getFirstWindow();
 
 		private:
 
@@ -169,6 +187,7 @@ namespace sdliv
 
 			Element * createElement(int layer = 0);
 			int addElement(Element * e, int layer = 0);
+			int removeElement(Element * e);
 			int changeElementLayer(Element * e, int layer);
 
 			int centerElement(Element * e);
@@ -298,6 +317,96 @@ namespace sdliv
 			SDL_Surface * renderText(const char * txt);
 			SDL_Surface * renderText(const std::string & txt);
 	};
-}
+
+
+
+/* FileHandler handles all the file io and tracking
+ *   It should track files in the directory and load them asynchronously
+ *   (eventually), untrack files that get deleted (and unload associated
+ *   assets), and reload files that have updated since they were loaded.
+ * */
+
+	class FileHandler
+	{
+		private:
+			//master list of all FileHandler instances sorted by filename
+			static std::map<std::string,FileHandler*> tracked_files;
+
+			//the active image file that we're viewing in our app
+			static FileHandler * active_image;
+
+		public:
+			//return nullptr if unsupported file type
+			static FileHandler* openFileIfSupported(const char * filename);
+			static FileHandler* openFileIfSupported(const std::string & filename);
+
+			//start tracking fh in tracked_files
+			static int track(FileHandler * fh);
+
+			//stop tracking fh in tracked files
+			static int untrack(FileHandler * fh);
+			static int untrack(const char * filename);
+			static int untrack(const std::string & filename);
+			static int untrackAll();
+
+			//begin tracking all files in a directory
+			static int openDirectory();
+
+			//get the Element object for the current active image file
+			static Element * getActiveImage();
+
+			//advance to the next tracked image file
+			static Element * nextImage();
+
+			//backup to the previous tracked image file
+			static Element * prevImage();
+
+		private:
+			ImageFileType type;
+
+			std::string filename;
+			SDL_RWops * rwops;
+			Window * window;
+			Element * element;
+
+			std::filesystem::directory_entry fs_entry;
+			std::filesystem::file_time_type timestamp;
+
+			//create rwops or return error
+			int open();
+			//create element from existing rwops or return error
+			int read();
+			//destroy rwops or return error if already null
+			int close();
+
+		public:
+			//null and zero values
+			FileHandler();
+
+			//calls setTarget(filename)
+			FileHandler(const char * filename);
+			FileHandler(const std::string & filename);
+
+			//we should log this because these wont like being copied bitwise
+			FileHandler(const FileHandler & fh);
+
+			//make sure rwops is closed, destroy element object
+			~FileHandler();
+
+			//read image data if file has been updated or if it hasn't been read
+			int update();
+
+			//sets filename and fills fs_entry and timestamp info
+			//infers type from filename
+			int setTarget(const char *filename);
+			int setTarget(const std::string & filename);
+
+			//opens file briefly and uses IMG_isX() to discover image type
+			ImageFileType detectImageType();
+
+
+	};
+
+} //end namespace sdliv
 
 #endif

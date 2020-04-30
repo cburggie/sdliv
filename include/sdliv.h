@@ -357,7 +357,7 @@ namespace sdliv
 			static int untrack(const std::string & filename);
 
 			//begin tracking all files in a directory
-			static int openDirectory();
+			static int openDirectory(std::filesystem::path & p);
 
 			//get the Element object for the current active image file
 			static Element * getActiveImage();
@@ -378,6 +378,13 @@ namespace sdliv
 
 			std::filesystem::directory_entry fs_entry;
 			std::filesystem::file_time_type timestamp;
+
+			//create rwops or return error
+			int open();
+			//create element from existing rwops or return error
+			int read();
+			//destroy rwops or return error if already null
+			int close();
 
 		public:
 			//null and zero values
@@ -401,12 +408,7 @@ namespace sdliv
 			//opens file briefly and uses IMG_isX() to discover image type
 			ImageFileType detectImageType();
 
-			//create rwops or return error
-			int open();
-			//create element from existing rwops or return error
-			int read();
-			//destroy rwops or return error if already null
-			int close();
+
 	};
 
 } //end namespace sdliv

@@ -319,7 +319,9 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 	else if (IMG_isGIF(rwops))  { type = FILETYPE_GIF; }
 	else if (IMG_isWEBP(rwops)) { type = FILETYPE_WEBP; }
 	else if (IMG_isTIF(rwops))  { type = FILETYPE_TIF; }
+#ifndef WIN32
 	else if (IMG_isSVG(rwops))  { type = FILETYPE_SVG; }
+#endif
 	else if (IMG_isICO(rwops))  { type = FILETYPE_ICO; }
 	else if (IMG_isCUR(rwops))  { type = FILETYPE_CUR; }
 	else if (IMG_isBMP(rwops))  { type = FILETYPE_BMP; }
@@ -380,54 +382,12 @@ int sdliv::FileHandler::read()
 
 	switch (type)
 	{
-		case FILETYPE_ICO:
-			s = IMG_LoadICO_RW(rwops);
-			break;
-		case FILETYPE_CUR:
-			s = IMG_LoadCUR_RW(rwops);
-			break;
-		case FILETYPE_BMP:
-			s = IMG_LoadBMP_RW(rwops);
-			break;
-		case FILETYPE_GIF:
-			s = IMG_LoadGIF_RW(rwops);
-			break;
-		case FILETYPE_JPG:
-			s = IMG_LoadJPG_RW(rwops);
-			break;
-		case FILETYPE_LBM:
-			s = IMG_LoadLBM_RW(rwops);
-			break;
-		case FILETYPE_PCX:
-			s = IMG_LoadPCX_RW(rwops);
-			break;
-		case FILETYPE_PNG:
-			s = IMG_LoadPNG_RW(rwops);
-			break;
-		case FILETYPE_PNM:
-			s = IMG_LoadPNM_RW(rwops);
-			break;
-		case FILETYPE_SVG:
-			s = IMG_LoadSVG_RW(rwops);
-			break;
-		case FILETYPE_TIF:
-			s = IMG_LoadTIF_RW(rwops);
-			break;
-		case FILETYPE_XCF:
-			s = IMG_LoadXCF_RW(rwops);
-			break;
-		case FILETYPE_XPM:
-			s = IMG_LoadXPM_RW(rwops);
-			break;
-		case FILETYPE_XV:
-			s = IMG_LoadXV_RW(rwops);
-			break;
-		case FILETYPE_WEBP:
-			s = IMG_LoadWEBP_RW(rwops);
-			break;
-		default:
+		case FILETYPE_UNSUPPORTED:
 			log("sdliv::FileHandler::read() -- file type unsupported");
 			return -1;
+		default:
+			s = IMG_Load_RW(rwops,0);
+			break;
 	}
 
 	if (element != nullptr)

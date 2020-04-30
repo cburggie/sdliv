@@ -76,18 +76,15 @@ bool sdliv::App::OnInit()
 int sdliv::App::openFile(const char * filepath)
 {
 	FileHandler * fh = FileHandler::openFileIfSupported(filepath);
+
 	if (fh == nullptr)
 	{
 		log("sdliv::App::openFile() -- file type not supported",filepath);
 		return -1;
 	}
 
-	if (active_element != nullptr)
-	{
-		active_element->hide();
-	}
-
 	active_element = FileHandler::getActiveImage();
+
 	SDL_assert(active_element != nullptr);
 
 	window->setSize(active_element->getWidth(), active_element->getHeight());

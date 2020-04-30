@@ -2,6 +2,32 @@
 #include <vector>
 
 
+#include <set>
+
+static std::set<std::string> supported_extensions = {
+	".ico",
+	".cur",
+	".bmp",
+	".gif",
+	".jpg",
+	".lbm",
+	".pcx",
+	".png",
+	".pnm",
+	".svg",
+	".tif",
+	".xcf",
+	".xpm",
+	".xv",
+	".webp"
+};
+
+static bool has_valid_extension(const std::string & fn)
+{
+	size_t pos = fn.find_last_of('.');
+	return ((pos != std::string::npos) && (supported_extensions.count(fn.substr(pos)) > 0)) ? true : false;
+}
+
 
 
 
@@ -18,6 +44,11 @@ sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 //static methods
 sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filename)
 {
+	if (!has_valid_extension(filename))
+	{
+		log("sdliv::FileHandler::openFileIfSupported() -- file extension not supported", filename);
+		return nullptr;
+	}
 	FileHandler * fh = new FileHandler(filename);
 	if (fh == nullptr)
 	{
@@ -27,6 +58,7 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filenam
 
 	if (fh->type == FILETYPE_UNSUPPORTED)
 	{
+		log("sdliv::FileHandler::openFileIfSupported() -- unsupported file",filename);
 		delete fh;
 		return nullptr;
 	}
@@ -38,7 +70,6 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filenam
 	}
 
 	track(fh);
-	active_image = fh;
 
 	return fh;
 }
@@ -59,6 +90,8 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::string & 
 
 int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 {
+	SDL_assert(fh != nullptr);
+
 	if (tracked_files.count(fh->filename) != 0)
 	{
 		log("sdliv::FileHandler::track() -- file already tracked");
@@ -147,7 +180,19 @@ int sdliv::FileHandler::openDirectory()
 
 sdliv::Element * sdliv::FileHandler::getActiveImage()
 {
-	if (active_image == nullptr) return nullptr;
+	if (active_image == nullptr)
+	{
+		if (tracked_files.size() > 0)
+		{
+			active_image = tracked_files.begin()->second;
+		}
+
+		else
+		{
+			return nullptr;
+		}
+	}
+
 
 	active_image->update();
 
@@ -160,12 +205,16 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 
 sdliv::Element * sdliv::FileHandler::nextImage()
 {
-	if (tracked_files.size() == 0) return nullptr;
+	if (tracked_files.size() == 0)
+	{
+		log("sdliv::FileHandler::nextImage() -- not tracking any files");
+		return nullptr;
+	}
 
 	if (active_image == nullptr)
 	{
-		FileHandler * fh = (*tracked_files.begin()).second;
-		return (fh == nullptr) ? nullptr : fh->element;
+		active_image = tracked_files.begin()->second;
+		return getActiveImage();
 	}
 
 	auto iter = tracked_files.find(active_image->filename);
@@ -191,7 +240,8 @@ sdliv::Element * sdliv::FileHandler::prevImage()
 
 	if (active_image == nullptr)
 	{
-		return nullptr;
+		active_image = (--(tracked_files.end()))->second;
+		return getActiveImage();
 	}
 
 	auto i = tracked_files.find(active_image->filename);

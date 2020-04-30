@@ -21,5 +21,7 @@ int main(int argc, char * argv[])
 		app.openFile(image_path);
 	}
 
+	sdliv::FileHandler::openDirectory();
+
 	return app.OnExecute();
 }

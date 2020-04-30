@@ -94,7 +94,7 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 
 	if (tracked_files.count(fh->filename) != 0)
 	{
-		log("sdliv::FileHandler::track() -- file already tracked");
+		log("sdliv::FileHandler::track() -- file already tracked",fh->filename);
 		return -1;
 	}
 
@@ -166,7 +166,6 @@ int sdliv::FileHandler::openDirectory()
 
 		if (fh != nullptr)
 		{
-			track(fh);
 			count++;
 		}
 	}

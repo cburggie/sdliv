@@ -37,6 +37,15 @@ sdliv::Window* sdliv::Window::getWindowByID(Uint32 id)
 
 
 
+sdliv::Window* sdliv::Window::getFirstWindow()
+{
+	if (registeredWindows.size() > 0) return nullptr;
+
+	return registeredWindows.begin()->second;
+}
+
+
+
 //initializer should open a new SDL_Window
 sdliv::Window::Window()
 {
@@ -149,6 +158,19 @@ int sdliv::Window::addElement(sdliv::Element * e, int layer)
 	elements[e->getID()] = e;
 	layers[layer][e->getID()] = e;
 
+	return 0;
+}
+
+
+
+
+
+int sdliv::Window::removeElement(sdliv::Element * e)
+{
+	SDL_assert(e != nullptr);
+	if (elements.count(e->getID()) == 0) return 1; // element not found
+	layers[e->getLayer()].erase(e->getID());
+	elements.erase(e->getID());
 	return 0;
 }
 

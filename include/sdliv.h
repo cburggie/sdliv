@@ -42,6 +42,8 @@
 
 
 
+bool operator<(const std::string & a, std::string & b);
+
 
 
 namespace sdliv
@@ -61,6 +63,7 @@ namespace sdliv
 		FILETYPE_CUR,
 		FILETYPE_BMP,
 		FILETYPE_GIF,
+		FILETYPE_JPG,
 		FILETYPE_LBM,
 		FILETYPE_PCX,
 		FILETYPE_PNG,
@@ -80,8 +83,8 @@ namespace sdliv
 	class Font;
 	class FileHandler;
 
-	void log(const char * text);
-	void log(const std::string & text);
+	void log(const char * text, const char * arg = nullptr);
+	void log(const std::string & text, const char * arg = nullptr);
 
 
 
@@ -192,6 +195,7 @@ namespace sdliv
 
 			Element * createElement(int layer = 0);
 			int addElement(Element * e, int layer = 0);
+			int removeElement(Element * e);
 			int changeElementLayer(Element * e, int layer);
 
 			int centerElement(Element * e);
@@ -367,7 +371,7 @@ namespace sdliv
 		private:
 			ImageFileType type;
 
-			const char * filename;
+			std::string filename;
 			SDL_RWops * rwops;
 			Window * window;
 			Element * element;

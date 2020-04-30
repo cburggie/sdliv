@@ -17,6 +17,7 @@ LIB += -lSDL2
 LIB += -lSDL2_image
 LIB += -lSDL2_ttf
 LIB += -lpthread
+LIB += -lstdc++fs
 
 
 
@@ -35,6 +36,7 @@ CC   = g++-8 ${COPT}
 ##### BUILD OBJECTS 
 
 OBJ  = ${BLD}/main.o
+OBJ += ${BLD}/util.o
 OBJ += ${BLD}/log.o
 OBJ += ${BLD}/constants.o
 OBJ += ${BLD}/App.o
@@ -94,6 +96,9 @@ ${BLD}/constants.o: ${SRC}/constants.cpp ${HDR}
 	${CC} -o $@ -c $<
 
 ${BLD}/log.o: ${SRC}/log.cpp ${HDR}
+	${CC} -o $@ -c $<
+
+${BLD}/util.o: ${SRC}/util.cpp ${HDR}
 	${CC} -o $@ -c $<
 
 ${BLD}/main.o: ${SRC}/main.cpp ${HDR}

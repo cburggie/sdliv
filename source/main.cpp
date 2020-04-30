@@ -8,9 +8,6 @@ const char * image_path = "E:\\Programming Projects\\ImageViewer\\image.jpg";
 
 int main(int argc, char * argv[])
 {
-#ifdef WIN32
-	std::filesystem::current_path("E:\\Programming Projects\\ImageViewer\\");
-#endif
 	sdliv::App app;
 	app.OnInit();
 

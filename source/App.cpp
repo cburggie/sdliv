@@ -83,6 +83,7 @@ int sdliv::App::openFile(const char * filepath)
 		return -1;
 	}
 
+	std::filesystem::current_path(fh->parent_path());
 	active_element = FileHandler::getActiveImage();
 
 	SDL_assert(active_element != nullptr);

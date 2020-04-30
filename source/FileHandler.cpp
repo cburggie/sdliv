@@ -142,14 +142,17 @@ int sdliv::FileHandler::untrack(const std::string & filename)
 
 int sdliv::FileHandler::untrackAll()
 {
-	int error = 0;
-
 	for (auto & p : tracked_files)
 	{
-		error |= untrack(p.first.c_str());
+		if (p.second != nullptr)
+		{
+			delete p.second;
+		}
 	}
 
-	return error;
+	tracked_files.clear();
+
+	return 0;
 }
 
 
@@ -343,6 +346,11 @@ sdliv::FileHandler::~FileHandler()
 }
 
 
+
+std::filesystem::path sdliv::FileHandler::parent_path() const
+{
+	return fs_entry.path().parent_path();
+}
 
 
 

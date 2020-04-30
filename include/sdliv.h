@@ -393,6 +393,7 @@ namespace sdliv
 			//make sure rwops is closed, destroy element object
 			~FileHandler();
 
+			std::filesystem::path parent_path() const;
 			//read image data if file has been updated or if it hasn't been read
 			int update();
 

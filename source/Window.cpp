@@ -195,6 +195,20 @@ int sdliv::Window::changeElementLayer(sdliv::Element * e, int layer)
 
 
 
+int sdliv::Window::resizeElement(Element * e)
+{
+	double x_scale = ((double) getWidth()) / ((double) e->getWidth());
+	double y_scale = ((double) getHeight()) / ((double) e->getHeight());
+
+	double scale = (x_scale < y_scale) ? x_scale : y_scale;
+
+	return e->setDrawScale(scale);
+}
+
+
+
+
+
 int sdliv::Window::centerElement(Element * e)
 {
 	SDL_assert(e != nullptr);

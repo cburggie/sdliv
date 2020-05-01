@@ -201,6 +201,7 @@ namespace sdliv
 			int removeElement(Element * e);
 			int changeElementLayer(Element * e, int layer);
 
+			int resizeElement(Element * e);
 			int centerElement(Element * e);
 
 			int updateAll();

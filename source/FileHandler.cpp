@@ -293,15 +293,8 @@ sdliv::FileHandler::FileHandler()
 
 
 
-sdliv::FileHandler::FileHandler(const char * filename)
+sdliv::FileHandler::FileHandler(const char * filename) : sdliv::FileHandler::FileHandler()
 {
-	type = FILETYPE_UNSUPPORTED;
-	this->filename = "";
-	rwops = nullptr;
-	element = nullptr;
-	window = Window::getFirstWindow();
-	fs_entry = std::filesystem::directory_entry();
-	timestamp = std::filesystem::file_time_type();
 	setTarget(filename);
 }
 
@@ -309,16 +302,9 @@ sdliv::FileHandler::FileHandler(const char * filename)
 
 
 
-sdliv::FileHandler::FileHandler(const std::string & filename)
+sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(filename.c_str())
 {
-	type = FILETYPE_UNSUPPORTED;
-	this->filename = "";
-	rwops = nullptr;
-	element = nullptr;
-	window = Window::getFirstWindow();
-	fs_entry = std::filesystem::directory_entry();
-	timestamp = std::filesystem::file_time_type();
-	setTarget(filename);
+	
 }
 
 

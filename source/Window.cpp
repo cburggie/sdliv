@@ -56,11 +56,22 @@ sdliv::Window::Window()
 	window = nullptr;
 	renderer = nullptr;
 
-	SDL_CreateWindowAndRenderer(
-			0, 0, 
-			SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE, 
-			&(window), &(renderer));
+	//initialize window
+	window = SDL_CreateWindow(constants::window_title,
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, //position
+			0,0, //size
+			SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE); //flags
+	SDL_assert(window != nullptr);
 
+
+	//initialize renderer
+	renderer = SDL_CreateRenderer(
+			window,
+			-1,
+			SDL_RENDERER_ACCELERATED);
+	SDL_assert(renderer != nullptr);
+
+	//handle accounting and set defaults
 	RegisterWindow(this);
 	setBackgroundColor(0,0,0);
 }

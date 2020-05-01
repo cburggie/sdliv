@@ -5,17 +5,23 @@
 #include <set>
 
 static std::set<std::string> supported_extensions = {
+#ifndef NO_INIT_JPG
+	".jpg",
+#endif
+#ifndef NO_INIT_PNG
+	".png",
+#endif
+#ifndef NO_INIT_TIF
+	".tif",
+#endif
 	".ico",
 	".cur",
 	".bmp",
 	".gif",
-	".jpg",
 	".lbm",
 	".pcx",
-	".png",
 	".pnm",
 	".svg",
-	".tif",
 	".xcf",
 	".xpm",
 	".xv",
@@ -398,17 +404,23 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 		close_when_done = true;
 	}
 
-	if      (IMG_isJPG(rwops))  { type = FILETYPE_JPG; }
+	if (IMG_isBMP(rwops))  { type = FILETYPE_BMP; }
+#ifndef NO_INIT_JPG
+	else if (IMG_isJPG(rwops))  { type = FILETYPE_JPG; }
+#endif
+#ifndef NO_INIT_PNG
 	else if (IMG_isPNG(rwops))  { type = FILETYPE_PNG; }
+#endif
 	else if (IMG_isGIF(rwops))  { type = FILETYPE_GIF; }
 	else if (IMG_isWEBP(rwops)) { type = FILETYPE_WEBP; }
+#ifndef NO_INIT_TIF
 	else if (IMG_isTIF(rwops))  { type = FILETYPE_TIF; }
-#ifndef WIN32
+#endif
+#ifndef NO_INIT_SVG
 	else if (IMG_isSVG(rwops))  { type = FILETYPE_SVG; }
 #endif
 	else if (IMG_isICO(rwops))  { type = FILETYPE_ICO; }
 	else if (IMG_isCUR(rwops))  { type = FILETYPE_CUR; }
-	else if (IMG_isBMP(rwops))  { type = FILETYPE_BMP; }
 	else if (IMG_isLBM(rwops))  { type = FILETYPE_LBM; }
 	else if (IMG_isPCX(rwops))  { type = FILETYPE_PCX; }
 	else if (IMG_isPNM(rwops))  { type = FILETYPE_PNM; }

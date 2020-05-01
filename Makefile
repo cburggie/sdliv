@@ -64,6 +64,7 @@ clean:
 	rm -f ${EXE}
 	rmdir ${BLD}
 
+rebuild: clean all
 
 
 

@@ -119,7 +119,7 @@ int sdliv::App::OnExecute()
 
 	SDL_AddEventWatch([](void * appV, SDL_Event *event)-> int
 	{
-		if (event->type == SDL_WINDOWEVENT)
+		if (event->type == SDL_WINDOWEVENT && event->window.type == SDL_WINDOWEVENT_SIZE_CHANGED)
 		{
 			sdliv::App *app = (sdliv::App*)appV;
 			app->window->centerElement(app->active_element);

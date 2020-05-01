@@ -76,8 +76,6 @@ void sdliv::App::OnEvent(SDL_Event * e)
 					break;
 				case SDLK_RIGHT:
 					active_element = FileHandler::nextImage();
-					window->resizeElement(active_element);
-					window->centerElement(active_element);
 					OnRender();
 					break;
 				case SDLK_q:

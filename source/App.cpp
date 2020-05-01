@@ -16,14 +16,10 @@ int sdliv::App::_window_event_filter(void * param, SDL_Event * event)
 		{
 			case SDL_WINDOWEVENT_RESIZED:
 				log("SDL_WINDOWEVENT_RESIZED");
-				app->window->resizeElement(app->active_element);
-				app->window->centerElement(app->active_element);
 				app->OnRender();
 				break;
 			case SDL_WINDOWEVENT_SIZE_CHANGED:
 				log("SDL_WINDOWEVENT_SIZE_CHANGED");
-				app->window->resizeElement(app->active_element);
-				app->window->centerElement(app->active_element);
 				app->OnRender();
 				break;
 			default:
@@ -188,6 +184,10 @@ void sdliv::App::OnRender()
 {
 	SDL_assert(window != nullptr);
 	SDL_assert(active_element != nullptr);
+
+	
+	window->resizeElement(active_element);
+	window->centerElement(active_element);
 
 	if (window->clear())
 	{

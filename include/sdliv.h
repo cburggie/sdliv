@@ -54,6 +54,7 @@ namespace sdliv
 		extern const char * font_path;
 		extern const int window_minimum_width;
 		extern const int window_minimum_height;
+		//extern const int window_update_delay_ms;
 	}
 
 	typedef enum
@@ -93,6 +94,8 @@ namespace sdliv
 	class App
 	{
 		private:
+			static int _window_event_filter(void * param, SDL_Event * event);
+
 			bool Running;
 
 			Window * window;

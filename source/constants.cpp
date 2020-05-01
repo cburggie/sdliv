@@ -8,4 +8,5 @@ const char * sdliv::constants::font_path = "c:\\windows\\fonts\\DejaVuSansMono.t
 #endif
 const int sdliv::constants::window_minimum_width = 100;
 const int sdliv::constants::window_minimum_height = 50;
+//const int sdliv::constants::window_update_delay_ms = 50;
 

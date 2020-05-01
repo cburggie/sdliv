@@ -69,16 +69,6 @@ sdliv::Window::Window()
 			window,
 			-1,
 			SDL_RENDERER_ACCELERATED);
-
-	if (renderer == nullptr)
-	{
-		log("sdliv::Window::Window() -- initializing renderer as software fallback");
-		renderer = SDL_CreateRenderer(
-			window,
-			-1,
-			SDL_RENDERER_SOFTWARE);
-	}
-
 	SDL_assert(renderer != nullptr);
 
 	//handle accounting and set defaults

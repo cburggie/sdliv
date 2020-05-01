@@ -8,10 +8,6 @@ void sdliv::App::OnEvent(SDL_Event * e)
 
 	switch (e->type)
 	{
-		case SDL_WINDOWEVENT:
-			window->centerElement(active_element);
-			OnRender();
-			break;
 		case SDL_KEYDOWN:
 			switch (e->key.keysym.sym)
 			{

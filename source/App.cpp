@@ -73,11 +73,13 @@ bool sdliv::App::OnInit()
 	}
 
 	int img_init_flags = 0;
-#ifndef WIN32
+#ifndef NO_INIT_JPG
+	img_init_flags |= IMG_INIT_JPG;
+#endif
+#ifndef NO_INIT_PNG
 	img_init_flags |= IMG_INIT_PNG;
 #endif
-	img_init_flags |= IMG_INIT_JPG;
-#ifndef WIN32
+#ifndef NO_INIT_TIF
 	img_init_flags |= IMG_INIT_TIF;
 #endif
 

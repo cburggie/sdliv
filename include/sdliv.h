@@ -5,6 +5,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#define NO_INIT_SVG
+#define NO_INIT_PNG
+#define NO_INIT_TIF
 #else
 #include <sdl2.2.0.5\build\native\include\SDL.h>
 #include <sdl2_image.v140.2.0.1\build\native\include\SDL_image.h>

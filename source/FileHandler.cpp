@@ -443,6 +443,11 @@ int sdliv::FileHandler::update()
 {
 	if (element == nullptr || fs_entry.last_write_time() > timestamp)
 	{
+		if (fs_entry.last_write_time() > timestamp)
+		{
+			log("sdliv::FileHandler::update() -- file changed since last read");
+		}
+
 		open();
 		read();
 		close();
@@ -516,6 +521,8 @@ int sdliv::FileHandler::close()
 
 	int error = SDL_RWclose(rwops);
 	if (error) log("sdliv::FileHandler::close() -- error on SDL_RWclose()");
+
+	rwops = nullptr;
 
 	return error;
 }

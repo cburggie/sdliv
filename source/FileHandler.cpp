@@ -17,9 +17,7 @@ std::set<std::string> sdliv::FileHandler::supportedExtensions = {
 	".lbm",
 	".pcx",
 	".pnm",
-#ifndef NO_INIT_SVG
 	".svg",
-#endif
 	".xcf",
 	".xpm",
 	".xv",
@@ -413,9 +411,7 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 	else if (IMG_isGIF(rwops))  { type = FILETYPE_GIF; }
 	else if (IMG_isWEBP(rwops)) { type = FILETYPE_WEBP; }
 	else if (IMG_isTIF(rwops))  { type = FILETYPE_TIF; }
-#ifndef NO_INIT_SVG
 	else if (IMG_isSVG(rwops))  { type = FILETYPE_SVG; }
-#endif
 	else if (IMG_isICO(rwops))  { type = FILETYPE_ICO; }
 	else if (IMG_isCUR(rwops))  { type = FILETYPE_CUR; }
 	else if (IMG_isLBM(rwops))  { type = FILETYPE_LBM; }

@@ -13,7 +13,7 @@
 #include <sdl2.2.0.5\build\native\include\SDL.h>
 #include <sdl2_image.v140.2.0.1\build\native\include\SDL_image.h>
 #include <sdl2_ttf.v140.2.0.14\build\native\include\SDL_ttf.h>
-
+#define NO_INIT_SVG
 #endif
 
 #include <map>

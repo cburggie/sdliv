@@ -6,14 +6,8 @@
 #include <string>
 
 namespace sdliv {
-	extern void log();
 
-	template<typename T, typename... A>
-	void log(T const& t, A const&... args)
-	{
-		std::cout << stringify(t);
-		log(args...);
-	};
+	extern void log();
 
 	inline std::string stringify(std::string v) { return v; }
 	inline std::string stringify(const char *c) { return std::string(c); }
@@ -24,4 +18,11 @@ namespace sdliv {
 	{
 		return "(Cannot print type:" + (std::string)typeid(T).name() + ")";
 	}
+
+	template<typename T, typename... A>
+	void log(T const& t, A const&... args)
+	{
+		std::cout << stringify(t) << ' ';
+		log(args...);
+	};
 }

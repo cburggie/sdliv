@@ -1,8 +1,7 @@
 #include <sdliv.h>
-#include <vector>
+
+//already included in sdliv.h
 #include <filesystem>
-
-
 #include <set>
 
 std::set<std::string> sdliv::FileHandler::supportedExtensions = {

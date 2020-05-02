@@ -1,19 +1,15 @@
 #include <sdliv.h>
-#include <vector>
 
-
+//already included in sdliv.h
+#include <filesystem>
 #include <set>
 
-static std::set<std::string> supported_extensions = {
-#ifndef NO_INIT_JPG
+std::set<std::string> sdliv::FileHandler::supportedExtensions = {
+/* added dynamically dependent upon success of Img_Init
 	".jpg",
-#endif
-#ifndef NO_INIT_PNG
 	".png",
-#endif
-#ifndef NO_INIT_TIF
 	".tif",
-#endif
+*/
 	".ico",
 	".cur",
 	".bmp",
@@ -21,47 +17,50 @@ static std::set<std::string> supported_extensions = {
 	".lbm",
 	".pcx",
 	".pnm",
+#ifndef NO_INIT_SVG
 	".svg",
+#endif
 	".xcf",
 	".xpm",
 	".xv",
 	".webp"
 };
 
-static bool has_valid_extension(const std::string & fn)
+bool sdliv::FileHandler::hasValidExtension(const std::filesystem::directory_entry &file)
 {
-	size_t pos = fn.find_last_of('.');
-	return ((pos != std::string::npos) && (supported_extensions.count(fn.substr(pos)) > 0)) ? true : false;
+	return supportedExtensions.find(file.path().extension().string()) != supportedExtensions.end();
 }
 
 
 
 
 //static members
-std::map<std::string,sdliv::FileHandler*> sdliv::FileHandler::tracked_files
-		= std::map<std::string,sdliv::FileHandler*>();
+bool sdliv::FileHandler::setComparison(const sdliv::FileHandler *lhs, const sdliv::FileHandler *rhs)
+{
+	return (std::string)*lhs < (std::string)*rhs;
+}
+std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdliv::FileHandler::tracked_files(sdliv::FileHandler::setComparison);
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
 
 
 
-
 //static methods
-sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filename)
+sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::filesystem::directory_entry & dirEnt)
 {
-	if (active_image != nullptr && active_image->filename.compare(filename) == 0)
+	if (active_image != nullptr && active_image->fs_entry == dirEnt)
 	{
 		return active_image;
 	}
 
-	if (!has_valid_extension(filename))
+	if (!hasValidExtension(dirEnt))
 	{
-		log("sdliv::FileHandler::openFileIfSupported() -- file extension not supported", filename);
+		log("sdliv::FileHandler::openFileIfSupported() -- file extension not supported", dirEnt.path().filename().string());
 		return nullptr;
 	}
 
-	FileHandler * fh = new FileHandler(filename);
+	FileHandler * fh = new FileHandler(dirEnt);
 
 	if (fh == nullptr)
 	{
@@ -71,15 +70,15 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filenam
 
 	if (fh->type == FILETYPE_UNSUPPORTED)
 	{
-		log("sdliv::FileHandler::openFileIfSupported() -- unsupported file",filename);
+		log("sdliv::FileHandler::openFileIfSupported() -- unsupported file", dirEnt.path().filename().string());
 		delete fh;
 		return nullptr;
 	}
 
-	if (tracked_files.count(fh->filename) > 0)
+	if (tracked_files.count(fh) > 0)
 	{
-		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked",fh->filename);
-		untrack(fh->filename);
+		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->fs_entry.path().string());
+		untrack(fh);
 	}
 
 	track(fh);
@@ -91,10 +90,16 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filenam
 
 
 
-
-sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::string & filename)
+sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::string & filepath)
 {
-	return openFileIfSupported(filename.c_str());
+	return openFileIfSupported(std::filesystem::directory_entry(filepath));
+}
+
+
+
+sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const char * filepath)
+{
+	return openFileIfSupported(std::string(filepath));
 }
 
 
@@ -105,13 +110,13 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 {
 	SDL_assert(fh != nullptr);
 
-	if (tracked_files.count(fh->filename) != 0)
+	if (tracked_files.find(fh) != tracked_files.end())
 	{
-		log("sdliv::FileHandler::track() -- file already tracked",fh->filename);
+		log("sdliv::FileHandler::track() -- file already tracked", (std::string)*fh);
 		return -1;
 	}
 
-	tracked_files[fh->filename] = fh;
+	tracked_files.insert(fh);
 	return 0;
 }
 
@@ -121,37 +126,17 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 
 int sdliv::FileHandler::untrack(sdliv::FileHandler * fh)
 {
-	return untrack(fh->filename);
-}
 
-
-
-
-
-int sdliv::FileHandler::untrack(const char * filename)
-{
-	if (tracked_files.count(filename) == 0)
+	if (tracked_files.erase(fh) == 0)
 	{
 		log("sdliv::FileHandler::untrack() -- file not tracked");
 		return -1;
 	}
 
-	FileHandler * fh = tracked_files[filename];
 	if (fh != nullptr) delete fh;
 	fh = nullptr;
 
-	tracked_files.erase(filename);
-
 	return 0;
-}
-
-
-
-
-
-int sdliv::FileHandler::untrack(const std::string & filename)
-{
-	return untrack(filename.c_str());
 }
 
 
@@ -160,17 +145,28 @@ int sdliv::FileHandler::untrack(const std::string & filename)
 
 int sdliv::FileHandler::untrackAll()
 {
-	for (auto & p : tracked_files)
+	for (auto & fh : tracked_files)
 	{
-		if (p.second != nullptr)
-		{
-			delete p.second;
-		}
+		delete fh;
 	}
 
 	tracked_files.clear();
 
 	return 0;
+}
+
+
+
+sdliv::FileHandler::operator std::string() const
+{
+	return this->fs_entry.path().filename().string();
+}
+
+
+
+void sdliv::FileHandler::addSupport(const std::string &extension)
+{
+	supportedExtensions.insert(extension);
 }
 
 
@@ -185,7 +181,7 @@ int sdliv::FileHandler::openDirectory()
 	{
 		if (f.is_regular_file())
 		{
-			FileHandler * fh = openFileIfSupported(f.path().filename().string());
+			FileHandler * fh = openFileIfSupported(f);
 
 			if (fh != nullptr)
 			{
@@ -205,9 +201,9 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 {
 	if (active_image == nullptr)
 	{
-		if (tracked_files.size() > 0)
+		if (!tracked_files.empty())
 		{
-			active_image = tracked_files.begin()->second;
+			active_image = *tracked_files.begin();
 		}
 
 		else
@@ -236,11 +232,11 @@ sdliv::Element * sdliv::FileHandler::nextImage()
 
 	if (active_image == nullptr)
 	{
-		active_image = tracked_files.begin()->second;
+		active_image = *tracked_files.begin();
 		return getActiveImage();
 	}
 
-	auto iter = tracked_files.find(active_image->filename);
+	auto iter = tracked_files.find(active_image);
 	++iter;
 
 	if (iter == tracked_files.end())
@@ -248,7 +244,7 @@ sdliv::Element * sdliv::FileHandler::nextImage()
 		iter = tracked_files.begin();
 	}
 
-	active_image = iter->second;
+	active_image = *iter;
 
 	return getActiveImage();
 }
@@ -259,22 +255,26 @@ sdliv::Element * sdliv::FileHandler::nextImage()
 
 sdliv::Element * sdliv::FileHandler::prevImage()
 {
-	if (tracked_files.size() == 0) return nullptr;
+	if (tracked_files.size() == 0)
+	{
+		log("sdliv::FileHandler::prevImage() -- not tracking any files");
+		return nullptr;
+	}
 
 	if (active_image == nullptr)
 	{
-		active_image = (--(tracked_files.end()))->second;
+		active_image = *(--(tracked_files.end()));
 		return getActiveImage();
 	}
 
-	auto i = tracked_files.find(active_image->filename);
+	auto i = tracked_files.find(active_image);
 
 	if (i == tracked_files.begin())
 	{
 		i = tracked_files.end();
 	}
 
-	active_image = (--i)->second;
+	active_image = *(--i);
 
 	return getActiveImage();
 }
@@ -287,31 +287,33 @@ sdliv::Element * sdliv::FileHandler::prevImage()
 sdliv::FileHandler::FileHandler()
 {
 	type = FILETYPE_UNSUPPORTED;
-	filename = "";
 	rwops = nullptr;
 	element = nullptr;
 	window = Window::getFirstWindow();
 	fs_entry = std::filesystem::directory_entry();
-	timestamp = std::filesystem::file_time_type();
 }
 
 
 
 
 
-sdliv::FileHandler::FileHandler(const char * filename) : sdliv::FileHandler::FileHandler()
+sdliv::FileHandler::FileHandler(const std::filesystem::directory_entry & file) : sdliv::FileHandler::FileHandler()
 {
-	setTarget(filename);
+	setTarget(file);
 }
 
 
 
 
+sdliv::FileHandler::FileHandler(const char * filename) : sdliv::FileHandler::FileHandler(std::string(filename))
+{}
 
-sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(filename.c_str())
-{
-	
-}
+
+
+
+
+sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(std::filesystem::current_path() / filename))
+{}
 
 
 
@@ -322,12 +324,10 @@ sdliv::FileHandler::FileHandler(const sdliv::FileHandler & fh)
 	// **FIXME** this implementation _will_ cause problems with the destructor
 	log("sdliv::FileHandler::FileHandler(const sdliv::FileHandler&) -- copy constructor called");
 
-	filename = fh.filename;
 	rwops = fh.rwops;
 	element = fh.element;
 	window = fh.window;
 	fs_entry = fh.fs_entry;
-	timestamp = fh.timestamp;
 }
 
 
@@ -363,18 +363,7 @@ std::filesystem::path sdliv::FileHandler::parent_path() const
 
 int sdliv::FileHandler::setTarget(const char * fn)
 {
-	//filename is _not_ the full path
-	std::filesystem::path p = std::filesystem::current_path() / fn;
-	filename = p.filename().string().c_str();
-	fs_entry = std::filesystem::directory_entry(p);
-	if (!fs_entry.exists() || !fs_entry.is_regular_file())
-	{
-		log("sdliv::FileHandler:;setTarget() -- file does not exist", fn);
-		filename = "";
-	}
-	timestamp = fs_entry.last_write_time();
-	type = detectImageType();
-	return 0;
+	return setTarget(std::string(fn));
 }
 
 
@@ -383,7 +372,21 @@ int sdliv::FileHandler::setTarget(const char * fn)
 
 int sdliv::FileHandler::setTarget(const std::string & fn)
 {
-	return setTarget(fn.c_str());
+	//filename is _not_ the full path
+	std::filesystem::path p = std::filesystem::current_path() / fn;
+	return setTarget(std::filesystem::directory_entry(p));
+}
+
+
+int sdliv::FileHandler::setTarget(const std::filesystem::directory_entry & file)
+{
+	fs_entry = file;
+	if (!fs_entry.exists() || !fs_entry.is_regular_file())
+	{
+		log("sdliv::FileHandler:;setTarget() -- file does not exist", file.path().string());
+	}
+	type = detectImageType();
+	return 0;
 }
 
 
@@ -405,17 +408,11 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 	}
 
 	if (IMG_isBMP(rwops))  { type = FILETYPE_BMP; }
-#ifndef NO_INIT_JPG
 	else if (IMG_isJPG(rwops))  { type = FILETYPE_JPG; }
-#endif
-#ifndef NO_INIT_PNG
 	else if (IMG_isPNG(rwops))  { type = FILETYPE_PNG; }
-#endif
 	else if (IMG_isGIF(rwops))  { type = FILETYPE_GIF; }
 	else if (IMG_isWEBP(rwops)) { type = FILETYPE_WEBP; }
-#ifndef NO_INIT_TIF
 	else if (IMG_isTIF(rwops))  { type = FILETYPE_TIF; }
-#endif
 #ifndef NO_INIT_SVG
 	else if (IMG_isSVG(rwops))  { type = FILETYPE_SVG; }
 #endif
@@ -439,6 +436,15 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 
 int sdliv::FileHandler::update()
 {
+	std::filesystem::file_time_type timestamp = fs_entry.last_write_time();
+	if (!std::filesystem::exists(fs_entry))
+	{
+		log("sdliv::FileHandler::update() -- file no longer exists");
+		untrack(this);
+		//**FIXME** this will crash, need to update active_image
+		return 0;
+	}
+	fs_entry.refresh();
 	if (element == nullptr || fs_entry.last_write_time() > timestamp)
 	{
 		if (fs_entry.last_write_time() > timestamp)

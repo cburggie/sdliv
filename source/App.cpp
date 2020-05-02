@@ -71,22 +71,39 @@ bool sdliv::App::OnInit()
 	}
 
 	int img_init_flags = 0;
-#ifndef NO_INIT_JPG
 	img_init_flags |= IMG_INIT_JPG;
-#endif
-#ifndef NO_INIT_PNG
 	img_init_flags |= IMG_INIT_PNG;
-#endif
-#ifndef NO_INIT_TIF
 	img_init_flags |= IMG_INIT_TIF;
-#endif
 
-	if (img_init_flags != IMG_Init(img_init_flags))
+	int img_init_flags_final = IMG_Init(img_init_flags);
+	if (img_init_flags_final != img_init_flags)
 	{
 		log("sdliv::App::OnInit() -- IMG_Init() failed at least partially");
 		log(IMG_GetError());
-		SDL_Quit();
-		return true;
+	}
+	if ((img_init_flags_final & IMG_INIT_JPG) != 0)
+	{
+		FileHandler::addSupport(".jpg");
+	}
+	else
+	{
+		log("sdliv::App:OnInit() -- IMG_Init() failed to add support for .jpg files");
+	}
+	if ((img_init_flags_final & IMG_INIT_PNG) != 0)
+	{
+		FileHandler::addSupport(".png");
+	}
+	else
+	{
+		log("sdliv::App:OnInit() -- IMG_Init() failed to add support for .png files");
+	}
+	if ((img_init_flags_final & IMG_INIT_TIF) != 0)
+	{
+		FileHandler::addSupport(".tif");
+	}
+	else
+	{
+		log("sdliv::App:OnInit() -- IMG_Init() failed to add support for .tif files");
 	}
 
 	window = new Window();
@@ -129,9 +146,9 @@ int sdliv::App::openFile(const char * filepath)
 
 
 
-int sdliv::App::openFile(const std::string & s)
+int sdliv::App::openFile(const std::string & filepath)
 {
-	return openFile(s.c_str());
+	return openFile(filepath.c_str());
 }
 
 
@@ -185,7 +202,7 @@ void sdliv::App::OnRender()
 	SDL_assert(window != nullptr);
 	SDL_assert(active_element != nullptr);
 
-	
+
 	window->resizeElement(active_element);
 	window->centerElement(active_element);
 

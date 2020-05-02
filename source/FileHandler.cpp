@@ -1,9 +1,5 @@
 #include <sdliv.h>
 
-//already included in sdliv.h
-#include <filesystem>
-#include <set>
-
 std::set<std::string> sdliv::FileHandler::supportedExtensions = {
 /* added dynamically dependent upon success of Img_Init
 	".jpg",
@@ -35,7 +31,7 @@ bool sdliv::FileHandler::hasValidExtension(const std::filesystem::directory_entr
 //static members
 bool sdliv::FileHandler::setComparison(const sdliv::FileHandler *lhs, const sdliv::FileHandler *rhs)
 {
-	return (std::string)*lhs < (std::string)*rhs;
+	return lhs->getPathAsString() < rhs->getPathAsString();
 }
 std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdliv::FileHandler::tracked_files(sdliv::FileHandler::setComparison);
 
@@ -75,7 +71,7 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::filesyste
 
 	if (tracked_files.count(fh) > 0)
 	{
-		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->fs_entry.path().string());
+		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->getPathAsString());
 		untrack(fh);
 	}
 
@@ -110,7 +106,7 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 
 	if (tracked_files.find(fh) != tracked_files.end())
 	{
-		log("sdliv::FileHandler::track() -- file already tracked", (std::string)*fh);
+		log("sdliv::FileHandler::track() -- file already tracked", fh->getPathAsString());
 		return -1;
 	}
 
@@ -155,7 +151,7 @@ int sdliv::FileHandler::untrackAll()
 
 
 
-sdliv::FileHandler::operator std::string() const
+std::string sdliv::FileHandler::getPathAsString() const
 {
 	return this->fs_entry.path().filename().string();
 }

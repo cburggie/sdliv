@@ -375,7 +375,7 @@ namespace sdliv
 
 			static int untrackAll();
 
-			operator std::string() const;
+			std::string getPathAsString() const;
 
 			static void addSupport(const std::string &extension);
 

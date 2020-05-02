@@ -13,15 +13,13 @@
 #include <sdl2.2.0.5\build\native\include\SDL.h>
 #include <sdl2_image.v140.2.0.1\build\native\include\SDL_image.h>
 #include <sdl2_ttf.v140.2.0.14\build\native\include\SDL_ttf.h>
-#define NO_INIT_SVG
-#define NO_INIT_PNG
-#define NO_INIT_TIF
 
 #endif
 
 #include <map>
 #include <string>
 #include <filesystem>
+#include <set>
 
 
 
@@ -342,24 +340,25 @@ namespace sdliv
 	{
 		private:
 			//master list of all FileHandler instances sorted by filename
-			static std::map<std::string,FileHandler*> tracked_files;
+			static bool setComparison(const FileHandler *, const FileHandler *);
+			static std::set<FileHandler *, decltype(setComparison)*> tracked_files;
 
 			//the active image file that we're viewing in our app
 			static FileHandler * active_image;
 
-		public:
-			//return nullptr if unsupported file type
-			static FileHandler* openFileIfSupported(const char * filename);
-			static FileHandler* openFileIfSupported(const std::string & filename);
+			static bool hasValidExtension(const std::filesystem::directory_entry &);
 
 			//start tracking fh in tracked_files
 			static int track(FileHandler * fh);
 
 			//stop tracking fh in tracked files
 			static int untrack(FileHandler * fh);
-			static int untrack(const char * filename);
-			static int untrack(const std::string & filename);
-			static int untrackAll();
+
+		public:
+			//return nullptr if unsupported file type
+			static FileHandler* openFileIfSupported(const char * filepath);
+			static FileHandler* openFileIfSupported(const std::string & filepath);
+			static FileHandler* openFileIfSupported(const std::filesystem::directory_entry & file);
 
 			//begin tracking all files in a directory
 			static int openDirectory();
@@ -373,16 +372,24 @@ namespace sdliv
 			//backup to the previous tracked image file
 			static Element * prevImage();
 
+			static int untrackAll();
+
+			operator std::string() const;
+
+			static void addSupport(const std::string &extension);
+
+
 		private:
 			ImageFileType type;
 
-			std::string filename;
 			SDL_RWops * rwops;
 			Window * window;
 			Element * element;
 
 			std::filesystem::directory_entry fs_entry;
-			std::filesystem::file_time_type timestamp;
+
+			static std::set<std::string> supportedExtensions;
+
 
 			//create rwops or return error
 			int open();
@@ -398,6 +405,7 @@ namespace sdliv
 			//calls setTarget(filename)
 			FileHandler(const char * filename);
 			FileHandler(const std::string & filename);
+			FileHandler(const std::filesystem::directory_entry & file);
 
 			//we should log this because these wont like being copied bitwise
 			FileHandler(const FileHandler & fh);
@@ -409,10 +417,11 @@ namespace sdliv
 			//read image data if file has been updated or if it hasn't been read
 			int update();
 
-			//sets filename and fills fs_entry and timestamp info
+			//fills fs_entry
 			//infers type from filename
 			int setTarget(const char *filename);
 			int setTarget(const std::string & filename);
+			int setTarget(const std::filesystem::directory_entry & file);
 
 			//opens file briefly and uses IMG_isX() to discover image type
 			ImageFileType detectImageType();

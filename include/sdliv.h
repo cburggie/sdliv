@@ -346,6 +346,8 @@ namespace sdliv
 			//the active image file that we're viewing in our app
 			static FileHandler * active_image;
 
+			//image extensions we support
+			static std::set<std::string> supportedExtensions;
 			static bool hasValidExtension(const std::filesystem::directory_entry &);
 
 			//start tracking fh in tracked_files
@@ -387,9 +389,6 @@ namespace sdliv
 			Element * element;
 
 			std::filesystem::directory_entry fs_entry;
-
-			static std::set<std::string> supportedExtensions;
-
 
 			//create rwops or return error
 			int open();

@@ -47,10 +47,6 @@
 
 
 
-bool operator<(const std::string & a, std::string & b);
-
-
-
 namespace sdliv
 {
 	namespace constants

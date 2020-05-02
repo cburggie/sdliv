@@ -15,7 +15,7 @@
 #include <sdl2_ttf.v140.2.0.14\build\native\include\SDL_ttf.h>
 #endif
 
-#include <log.h>
+#include <sdliv_log.h>
 
 #include <map>
 #include <string>

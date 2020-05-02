@@ -12,7 +12,7 @@ BLD  = build
 ##### LIBRARIES
 
 HDR  = ${INC}/sdliv.h
-HDR += ${INC}/log.h
+HDR += ${INC}/sdliv_log.h
 
 LIB  = -L/usr/lib
 LIB += -lSDL2

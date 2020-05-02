@@ -153,7 +153,7 @@ int sdliv::FileHandler::untrackAll()
 
 std::string sdliv::FileHandler::getPathAsString() const
 {
-	return this->fs_entry.path().filename().string();
+	return this->fs_entry.path().string();
 }
 
 

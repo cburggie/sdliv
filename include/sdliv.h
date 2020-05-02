@@ -10,10 +10,9 @@
 
 //windows
 #else
-#include <sdl2.2.0.5\build\native\include\SDL.h>
-#include <sdl2_image.v140.2.0.1\build\native\include\SDL_image.h>
+#include <sdl2.nuget.2.0.12\build\native\include\SDL.h>
+#include <sdl2_image.nuget.2.0.5\build\native\include\SDL_image.h>
 #include <sdl2_ttf.v140.2.0.14\build\native\include\SDL_ttf.h>
-#define NO_INIT_SVG
 #endif
 
 #include <map>
@@ -45,10 +44,6 @@
  *		Font::Init() initializes the font rendering subsystem
  *		create a Font object with Font::openFont(window,path,size)
  */
-
-
-
-bool operator<(const std::string & a, std::string & b);
 
 
 
@@ -376,7 +371,7 @@ namespace sdliv
 
 			static int untrackAll();
 
-			operator std::string() const;
+			std::string getPathAsString() const;
 
 			static void addSupport(const std::string &extension);
 

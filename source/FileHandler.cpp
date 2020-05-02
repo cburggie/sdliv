@@ -1,9 +1,5 @@
 #include <sdliv.h>
 
-//already included in sdliv.h
-#include <filesystem>
-#include <set>
-
 std::set<std::string> sdliv::FileHandler::supportedExtensions = {
 /* added dynamically dependent upon success of Img_Init
 	".jpg",
@@ -17,9 +13,7 @@ std::set<std::string> sdliv::FileHandler::supportedExtensions = {
 	".lbm",
 	".pcx",
 	".pnm",
-#ifndef NO_INIT_SVG
 	".svg",
-#endif
 	".xcf",
 	".xpm",
 	".xv",
@@ -37,7 +31,7 @@ bool sdliv::FileHandler::hasValidExtension(const std::filesystem::directory_entr
 //static members
 bool sdliv::FileHandler::setComparison(const sdliv::FileHandler *lhs, const sdliv::FileHandler *rhs)
 {
-	return (std::string)*lhs < (std::string)*rhs;
+	return lhs->getPathAsString() < rhs->getPathAsString();
 }
 std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdliv::FileHandler::tracked_files(sdliv::FileHandler::setComparison);
 
@@ -77,7 +71,7 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::filesyste
 
 	if (tracked_files.count(fh) > 0)
 	{
-		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->fs_entry.path().string());
+		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->getPathAsString());
 		untrack(fh);
 	}
 
@@ -112,7 +106,7 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 
 	if (tracked_files.find(fh) != tracked_files.end())
 	{
-		log("sdliv::FileHandler::track() -- file already tracked", (std::string)*fh);
+		log("sdliv::FileHandler::track() -- file already tracked", fh->getPathAsString());
 		return -1;
 	}
 
@@ -157,9 +151,9 @@ int sdliv::FileHandler::untrackAll()
 
 
 
-sdliv::FileHandler::operator std::string() const
+std::string sdliv::FileHandler::getPathAsString() const
 {
-	return this->fs_entry.path().filename().string();
+	return this->fs_entry.path().string();
 }
 
 
@@ -413,9 +407,7 @@ sdliv::ImageFileType sdliv::FileHandler::detectImageType()
 	else if (IMG_isGIF(rwops))  { type = FILETYPE_GIF; }
 	else if (IMG_isWEBP(rwops)) { type = FILETYPE_WEBP; }
 	else if (IMG_isTIF(rwops))  { type = FILETYPE_TIF; }
-#ifndef NO_INIT_SVG
 	else if (IMG_isSVG(rwops))  { type = FILETYPE_SVG; }
-#endif
 	else if (IMG_isICO(rwops))  { type = FILETYPE_ICO; }
 	else if (IMG_isCUR(rwops))  { type = FILETYPE_CUR; }
 	else if (IMG_isLBM(rwops))  { type = FILETYPE_LBM; }

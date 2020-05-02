@@ -1,9 +1,3 @@
-#ifndef WIN32
-#include <SDL2/SDL.h>
-#else
-#include <sdl2.2.0.5\build\native\include\SDL.h>
-#endif
-
 #include <sdliv.h>
 
 

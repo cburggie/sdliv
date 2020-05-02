@@ -22,6 +22,6 @@ namespace sdliv {
 	template<typename T>
 	std::string stringify(T const &v)
 	{
-		return std::string("(Unknown Type)");
+		return "(Cannot print type:" + (std::string)typeid(T).name() + ")";
 	}
 }

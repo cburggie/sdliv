@@ -17,7 +17,9 @@ std::set<std::string> sdliv::FileHandler::supportedExtensions = {
 	".lbm",
 	".pcx",
 	".pnm",
+#ifndef NO_INIT_SVG
 	".svg",
+#endif
 	".xcf",
 	".xpm",
 	".xv",

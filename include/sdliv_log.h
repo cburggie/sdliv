@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _SDLIV_LOG_H_
+#define _SDLIV_LOG_H_
 
 //template functions need to be fully declared within header file
 
@@ -26,3 +27,5 @@ namespace sdliv {
 		log(args...);
 	};
 }
+
+#endif

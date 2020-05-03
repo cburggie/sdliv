@@ -24,3 +24,6 @@ notes
 *.ilk
 *.exe
 *.jpg
+*.lastcodeanalysissucceeded
+*.tlog
+*.xml

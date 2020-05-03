@@ -31,7 +31,7 @@ bool sdliv::FileHandler::hasValidExtension(const std::filesystem::directory_entr
 //static members
 bool sdliv::FileHandler::setComparison(const sdliv::FileHandler *lhs, const sdliv::FileHandler *rhs)
 {
-	return lhs->getPathAsString() < rhs->getPathAsString();
+	return lhs->fs_entry.path() < rhs->fs_entry.path();
 }
 std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdliv::FileHandler::tracked_files(sdliv::FileHandler::setComparison);
 

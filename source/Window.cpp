@@ -62,7 +62,7 @@ sdliv::Window::Window()
 			0,0, //size
 			SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE); //flags
 	SDL_assert(window != nullptr);
-
+	SDL_windowID = SDL_GetWindowID(window);
 
 	//initialize renderer
 	renderer = SDL_CreateRenderer(

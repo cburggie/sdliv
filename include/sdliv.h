@@ -15,6 +15,8 @@
 #include <sdl2_ttf.v140.2.0.14\build\native\include\SDL_ttf.h>
 #endif
 
+#include <sdliv_log.h>
+
 #include <map>
 #include <string>
 #include <filesystem>
@@ -84,12 +86,6 @@ namespace sdliv
 	class Element;
 	class Font;
 	class FileHandler;
-
-	void log(const char * text, const char * arg = nullptr);
-	void log(const char * text, const std::string & arg);
-	void log(const std::string & text, const char * arg = nullptr);
-	void log(const std::string & text, const std::string & arg);
-
 
 
 	class App

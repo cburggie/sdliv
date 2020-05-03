@@ -35,7 +35,6 @@ bool sdliv::Font::isInit()
 
 int sdliv::Font::quit()
 {
-	log("sdliv::Font::quit() called. Shutting down font subsystem.");
 	if (!module_initialized)
 	{
 		log("sdliv::Font::Quit() called while module uninitialized");

@@ -50,7 +50,7 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::filesyste
 
 	if (!hasValidExtension(dirEnt))
 	{
-		log("sdliv::FileHandler::openFileIfSupported() -- file extension not supported", dirEnt.path().filename().string());
+		log("sdliv::FileHandler::openFileIfSupported() -- file extension not supported:", dirEnt.path().filename().string());
 		return nullptr;
 	}
 

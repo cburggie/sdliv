@@ -12,12 +12,15 @@ BLD  = build
 ##### LIBRARIES
 
 HDR  = ${INC}/sdliv.h
+HDR += ${INC}/sdliv_log.h
+
 LIB  = -L/usr/lib
 LIB += -lSDL2
 LIB += -lSDL2_image
 LIB += -lSDL2_ttf
 LIB += -lpthread
 LIB += -lstdc++fs
+
 
 
 
@@ -68,6 +71,8 @@ rebuild: clean all
 
 
 
+
+
 ##### App OBJECT FILES
 
 ${BLD}/App.o: ${SRC}/App.cpp ${HDR}
@@ -87,6 +92,7 @@ ${BLD}/Font.o: ${SRC}/Font.cpp ${HDR}
 
 ${BLD}/FileHandler.o: ${SRC}/FileHandler.cpp ${HDR}
 	${CC} -o $@ -c $<
+
 
 
 

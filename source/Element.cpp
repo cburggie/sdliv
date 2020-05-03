@@ -32,6 +32,8 @@ sdliv::Element::Element()
 	height = 0;
 
 	scale = 1.0;
+	scale_x = 1.0;
+	scale_y = 1.0;
 
 	src_rect = { 0,0,0,0 };
 	dst_rect = { 0,0,0,0 };
@@ -60,6 +62,8 @@ sdliv::Element::Element(const Element & e)
 	height = e.height;
 
 	scale = e.scale;
+	scale_x = e.scale_x;
+	scale_y = e.scale_y;
 
 	src_rect.x = e.src_rect.x;
 	src_rect.y = e.src_rect.y;

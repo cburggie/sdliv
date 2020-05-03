@@ -318,6 +318,7 @@ sdliv::FileHandler::FileHandler(const sdliv::FileHandler & fh)
 	// **FIXME** this implementation _will_ cause problems with the destructor
 	log("sdliv::FileHandler::FileHandler(const sdliv::FileHandler&) -- copy constructor called");
 
+	type = fh.type;
 	rwops = fh.rwops;
 	element = fh.element;
 	window = fh.window;

@@ -36,7 +36,7 @@ namespace sdliv {
 	}
 	// basic log function
 	template<typename... A>
-	inline void _log(char* file, int line, A const&... args)
+	inline void _log(char const* file, int const line, A const&... args)
 	{
 		std::cout << std::string(file) << ":" << line << " - " << stringify(args...) << std::endl;
 	};

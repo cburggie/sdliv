@@ -7,24 +7,35 @@
 #include <string>
 
 namespace sdliv {
+	// privatize stringify(...) within this file
+	namespace {
+		// end of recursive variadic call
+		inline ::std::string stringify(void) { return ::std::string(); }
 
-	extern void log();
+		// individual types that we know how to stringify
+		inline ::std::string stringify(::std::string v) { return v; }
+		inline ::std::string stringify(const char *c) { return ::std::string(c); }
+		inline ::std::string stringify(int v) { return ::std::to_string(v); }
 
-	inline std::string stringify(std::string v) { return v; }
-	inline std::string stringify(const char *c) { return std::string(c); }
-	inline std::string stringify(int v) { return std::to_string(v); }
+		// fallback for unknown type, print the type name
+		template<typename T>
+		inline ::std::string stringify(T const &v)
+		{
+			return "(Cannot stringify:" + (::std::string)typeid(T).name() + ")";
+		}
 
-	template<typename T>
-	std::string stringify(T const &v)
-	{
-		return "(Cannot print type:" + (std::string)typeid(T).name() + ")";
+		// recursive variadic call
+		template<typename T, typename... A>
+		inline ::std::string stringify(T const& t, A const&... args)
+		{
+			return stringify(t) + stringify(args...);
+		}
 	}
-
-	template<typename T, typename... A>
-	void log(T const& t, A const&... args)
+	// basic log function
+	template<typename... A>
+	inline void log(A const&... args)
 	{
-		std::cout << stringify(t) << ' ';
-		log(args...);
+		std::cout << stringify(args...) << std::endl;
 	};
 }
 

@@ -6,6 +6,9 @@
 #include <iostream>
 #include <string>
 
+// Expand call to include filename and line number
+#define log(...) _log(__FILE__, __LINE__, __VA_ARGS__)
+
 namespace sdliv {
 	// privatize stringify(...) within this file
 	namespace {
@@ -33,9 +36,9 @@ namespace sdliv {
 	}
 	// basic log function
 	template<typename... A>
-	inline void log(A const&... args)
+	inline void _log(char* file, int line, A const&... args)
 	{
-		std::cout << stringify(args...) << std::endl;
+		std::cout << std::string(file) << ":" << line << " - " << stringify(args...) << std::endl;
 	};
 }
 

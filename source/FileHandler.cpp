@@ -452,6 +452,9 @@ int sdliv::FileHandler::update()
 
 		return active_image->update();
 	}
+	//**FIXME** what if file was deleted between exists() and refresh()?
+	// if refresh is first, .exists and .status cause crashes
+	// could check .exists, then .refresh, then .exists again, but thats a lot of OS calls.
 	fs_entry.refresh();
 	if (element == nullptr || fs_entry.last_write_time() > timestamp)
 	{

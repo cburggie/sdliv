@@ -24,21 +24,21 @@ namespace sdliv {
 		template<typename T>
 		inline ::std::string stringify(T const &v)
 		{
-			return "(Cannot stringify:" + (::std::string)typeid(T).name() + ")";
+			return "(Cannot stringify \"" + (::std::string)typeid(T).name() + "\")";
 		}
 
 		// recursive variadic call
 		template<typename T, typename... A>
 		inline ::std::string stringify(T const& t, A const&... args)
 		{
-			return stringify(t) + stringify(args...);
+			return stringify(t) + " " + stringify(args...);
 		}
 	}
 	// basic log function
 	template<typename... A>
 	inline void _log(char const* file, int const line, A const&... args)
 	{
-		std::cout << std::string(file) << ":" << line << " - " << stringify(args...) << std::endl;
+		std::cout << std::string(file) << ": " << line << " - " << stringify(args...) << std::endl;
 	};
 }
 

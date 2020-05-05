@@ -221,6 +221,7 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 
 sdliv::Element * sdliv::FileHandler::nextImage()
 {
+	openDirectory();
 	if (tracked_files.size() == 0)
 	{
 		log("sdliv::FileHandler::nextImage() -- not tracking any files");
@@ -252,6 +253,7 @@ sdliv::Element * sdliv::FileHandler::nextImage()
 
 sdliv::Element * sdliv::FileHandler::prevImage()
 {
+	openDirectory();
 	if (tracked_files.size() == 0)
 	{
 		log("sdliv::FileHandler::prevImage() -- not tracking any files");

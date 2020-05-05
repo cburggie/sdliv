@@ -37,7 +37,8 @@ std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdli
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
-std::filesystem::path sdliv::FileHandler::workingPath = std::filesystem::path();
+std::filesystem::file_time_type sdliv::FileHandler::lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
+std::filesystem::directory_entry sdliv::FileHandler::workingDirectory = std::filesystem::directory_entry();
 
 
 
@@ -162,26 +163,27 @@ void sdliv::FileHandler::addSupport(const std::string &extension)
 }
 
 
-std::filesystem::path sdliv::FileHandler::getWorkingPath()
+std::filesystem::directory_entry sdliv::FileHandler::getWorkingDirectory()
 {
-	return workingPath;
+	return workingDirectory;
 }
 
-int sdliv::FileHandler::setWorkingPath(std::filesystem::path path)
+int sdliv::FileHandler::setWorkingDirectory(std::filesystem::path path)
 {
+	std::filesystem::file_time_type lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
 	if (!std::filesystem::exists(path))
 	{
-		log("sdliv::FileHandler::setWorkingPath() -- path does not exist:", path.string());
+		log("sdliv::FileHandler::setWorkingDirectory() -- directory does not exist:", path.string());
 		return -1;
 	}
-	workingPath = path;
+	workingDirectory = std::filesystem::directory_entry(path);
 	return 0;
 }
 
-int sdliv::FileHandler::setWorkingPath(std::string path)
+int sdliv::FileHandler::setWorkingDirectory(std::string dir)
 {
-	std::filesystem::path p = std::filesystem::path(p);
-	return setWorkingPath(p);
+	std::filesystem::path d = std::filesystem::path(dir);
+	return setWorkingDirectory(d);
 }
 
 
@@ -191,24 +193,29 @@ int sdliv::FileHandler::openDirectory()
 {
 	int count = 0;
 
-	if (!std::filesystem::exists(sdliv::FileHandler::workingPath))
+	if (!std::filesystem::exists(workingDirectory))
 	{
-		log("sdliv::FileHandler::OpenDirectory() -- invalid path");
+		log("sdliv::FileHandler::OpenDirectory() -- invalid directory");
 		return -1;
 	}
-	for (auto& f: std::filesystem::directory_iterator(sdliv::FileHandler::workingPath))
+	workingDirectory.refresh();
+	if (workingDirectory.last_write_time() > lastDirectoryWriteTime)
 	{
-		if (f.is_regular_file())
+		lastDirectoryWriteTime = workingDirectory.last_write_time();
+		for (auto& f : std::filesystem::directory_iterator(sdliv::FileHandler::workingDirectory))
 		{
-			FileHandler * fh = openFileIfSupported(f);
-
-			if (fh != nullptr)
+			if (f.is_regular_file())
 			{
-				count++;
+				FileHandler * fh = openFileIfSupported(f);
+
+				if (fh != nullptr)
+				{
+					count++;
+				}
 			}
 		}
 	}
-
+	log(count);
 	return count;
 }
 
@@ -339,7 +346,7 @@ sdliv::FileHandler::FileHandler(const char * filename) : sdliv::FileHandler::Fil
 
 
 
-sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(sdliv::FileHandler::workingPath / filename))
+sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(sdliv::FileHandler::workingDirectory / filename))
 {}
 
 
@@ -401,7 +408,7 @@ int sdliv::FileHandler::setTarget(const char * fn)
 int sdliv::FileHandler::setTarget(const std::string & fn)
 {
 	//filename is _not_ the full path
-	std::filesystem::path p = sdliv::FileHandler::workingPath / fn;
+	std::filesystem::path p = sdliv::FileHandler::workingDirectory.path() / fn;
 	return setTarget(std::filesystem::directory_entry(p));
 }
 

@@ -37,7 +37,7 @@ std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdli
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
-std::filesystem::file_time_type sdliv::FileHandler::lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
+std::filesystem::file_time_type sdliv::FileHandler::lastDirectoryWriteTime = std::filesystem::file_time_type();
 std::filesystem::directory_entry sdliv::FileHandler::workingDirectory = std::filesystem::directory_entry();
 
 
@@ -170,7 +170,7 @@ std::filesystem::directory_entry sdliv::FileHandler::getWorkingDirectory()
 
 int sdliv::FileHandler::setWorkingDirectory(std::filesystem::path path)
 {
-	std::filesystem::file_time_type lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
+	lastDirectoryWriteTime = std::filesystem::file_time_type();
 	if (!std::filesystem::exists(path))
 	{
 		log("sdliv::FileHandler::setWorkingDirectory() -- directory does not exist:", path.string());

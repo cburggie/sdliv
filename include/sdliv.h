@@ -345,7 +345,7 @@ namespace sdliv
 			static int track(FileHandler * fh);
 
 			//stop tracking fh in tracked files
-			static int untrack(FileHandler * fh);
+			static std::set<FileHandler*>::iterator untrack(std::set<sdliv::FileHandler*>::iterator fhIter);
 
 		public:
 			//return nullptr if unsupported file type

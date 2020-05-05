@@ -72,10 +72,11 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::filesyste
 	if (tracked_files.count(fh) > 0)
 	{
 		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->getPathAsString());
-		untrack(fh);
 	}
-
-	track(fh);
+	else
+	{
+		track(fh);
+	}
 
 	return fh;
 }
@@ -118,19 +119,15 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 
 
 
-int sdliv::FileHandler::untrack(sdliv::FileHandler * fh)
+std::set<sdliv::FileHandler*>::iterator sdliv::FileHandler::untrack(std::set<sdliv::FileHandler*>::iterator fhIter)
 {
-
-	if (tracked_files.erase(fh) == 0)
-	{
-		log("sdliv::FileHandler::untrack() -- file not tracked");
-		return -1;
-	}
+	FileHandler* fh = *fhIter;
+	std::set<FileHandler*>::iterator iter = tracked_files.erase(fhIter);
 
 	if (fh != nullptr) delete fh;
 	fh = nullptr;
 
-	return 0;
+	return iter;
 }
 
 
@@ -208,6 +205,12 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 
 
 	active_image->update();
+	if (active_image == nullptr)
+	{
+		//**FIXME** we have no valid image, display a placeholder?
+		log("sdliv::FileHandler::getActiveImage() -- no active images available");
+		return nullptr;
+	}
 
 	return active_image->element;
 }
@@ -433,9 +436,21 @@ int sdliv::FileHandler::update()
 	if (!std::filesystem::exists(fs_entry))
 	{
 		log("sdliv::FileHandler::update() -- file no longer exists");
-		untrack(this);
-		//**FIXME** this will crash, need to update active_image
-		return 0;
+		std::set<FileHandler*>::iterator iter = tracked_files.find(this);
+		iter = untrack(iter);
+		if (iter == tracked_files.end())
+		{
+			if (iter == tracked_files.begin())
+			{
+				//**FIXME** we have no images left, return a placeholder ?
+				active_image = nullptr;
+				return -1;
+			}
+			iter = tracked_files.begin();
+		}
+		active_image = *(iter);
+
+		return active_image->update();
 	}
 	fs_entry.refresh();
 	if (element == nullptr || fs_entry.last_write_time() > timestamp)

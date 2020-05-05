@@ -367,3 +367,8 @@ int sdliv::Window::present()
 
 	return 0;
 }
+
+void sdliv::Window::setWindowTitle(std::string title)
+{
+	SDL_SetWindowTitle(getFirstWindow()->getWindow(), (std::string(sdliv::constants::window_title) + title).c_str());
+}

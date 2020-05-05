@@ -215,7 +215,6 @@ int sdliv::FileHandler::openDirectory()
 			}
 		}
 	}
-	log(count);
 	return count;
 }
 

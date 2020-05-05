@@ -206,6 +206,8 @@ namespace sdliv
 			int drawElement(Element * e); //draws one element
 			int drawElement(const int ID); // ""
 			int present(); //present screen updates on display
+
+			static void setWindowTitle(std::string);
 	};
 
 

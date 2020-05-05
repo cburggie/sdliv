@@ -503,9 +503,9 @@ int sdliv::FileHandler::update()
 		open();
 		read();
 		close();
-		return 1;
 	}
 
+	sdliv::Window::setWindowTitle(fs_entry.path().filename().string());
 	return 0;
 }
 

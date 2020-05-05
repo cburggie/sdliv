@@ -1,6 +1,6 @@
 #include <sdliv.h>
 
-const char * sdliv::constants::window_title = "Hello, World!";
+const char * sdliv::constants::window_title = "Charlotte's Amazing SDL Image Viewer - ";
 #ifndef WIN32
 const char * sdliv::constants::font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf";
 #else

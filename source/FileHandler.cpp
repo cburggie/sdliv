@@ -37,6 +37,7 @@ std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdli
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
+static std::filesystem::path workingPath = std::filesystem::path();
 
 
 
@@ -161,6 +162,28 @@ void sdliv::FileHandler::addSupport(const std::string &extension)
 }
 
 
+std::filesystem::path sdliv::FileHandler::getWorkingPath()
+{
+	return workingPath;
+}
+
+int sdliv::FileHandler::setWorkingPath(std::filesystem::path path)
+{
+	if (!std::filesystem::exists(path))
+	{
+		log("sdliv::FileHandler::setWorkingPath() -- path does not exist:", path.string());
+		return -1;
+	}
+	workingPath = path;
+	return 0;
+}
+
+int sdliv::FileHandler::setWorkingPath(std::string path)
+{
+	std::filesystem::path p = std::filesystem::path(p);
+	setWorkingPath(p);
+}
+
 
 
 
@@ -168,7 +191,12 @@ int sdliv::FileHandler::openDirectory()
 {
 	int count = 0;
 
-	for (auto& f: std::filesystem::directory_iterator(std::filesystem::current_path()))
+	if (!std::filesystem::exists(sdliv::FileHandler::workingPath))
+	{
+		log("sdliv::FileHandler::OpenDirectory() -- invalid path");
+		return -1;
+	}
+	for (auto& f: std::filesystem::directory_iterator(sdliv::FileHandler::workingPath))
 	{
 		if (f.is_regular_file())
 		{
@@ -311,7 +339,7 @@ sdliv::FileHandler::FileHandler(const char * filename) : sdliv::FileHandler::Fil
 
 
 
-sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(std::filesystem::current_path() / filename))
+sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(sdliv::FileHandler::workingPath / filename))
 {}
 
 
@@ -373,7 +401,7 @@ int sdliv::FileHandler::setTarget(const char * fn)
 int sdliv::FileHandler::setTarget(const std::string & fn)
 {
 	//filename is _not_ the full path
-	std::filesystem::path p = std::filesystem::current_path() / fn;
+	std::filesystem::path p = sdliv::FileHandler::workingPath / fn;
 	return setTarget(std::filesystem::directory_entry(p));
 }
 

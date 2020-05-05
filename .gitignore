@@ -27,3 +27,5 @@ notes
 *.lastcodeanalysissucceeded
 *.tlog
 *.xml
+*.psess
+*.vsp

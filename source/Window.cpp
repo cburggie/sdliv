@@ -74,6 +74,10 @@ sdliv::Window::Window()
 	//handle accounting and set defaults
 	RegisterWindow(this);
 	setBackgroundColor(0,0,0);
+	SDL_SetWindowMinimumSize(
+			window,
+			constants::window_minimum_width,
+			constants::window_minimum_height);
 }
 
 

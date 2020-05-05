@@ -435,6 +435,7 @@ int sdliv::FileHandler::update()
 	std::filesystem::file_time_type timestamp = fs_entry.last_write_time();
 	if (!std::filesystem::exists(fs_entry))
 	{
+		// **FIXME** this assumes we want the next file, not the previous
 		log("sdliv::FileHandler::update() -- file no longer exists");
 		std::set<FileHandler*>::iterator iter = tracked_files.find(this);
 		iter = untrack(iter);

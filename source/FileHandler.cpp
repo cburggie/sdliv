@@ -37,6 +37,8 @@ std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdli
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
+std::filesystem::file_time_type sdliv::FileHandler::lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
+std::filesystem::directory_entry sdliv::FileHandler::workingDirectory = std::filesystem::directory_entry();
 
 
 
@@ -72,10 +74,11 @@ sdliv::FileHandler* sdliv::FileHandler::openFileIfSupported(const std::filesyste
 	if (tracked_files.count(fh) > 0)
 	{
 		log("sdliv::FileHandler::openFileIfSupported() -- file already tracked", fh->getPathAsString());
-		untrack(fh);
 	}
-
-	track(fh);
+	else
+	{
+		track(fh);
+	}
 
 	return fh;
 }
@@ -118,19 +121,15 @@ int sdliv::FileHandler::track(sdliv::FileHandler * fh)
 
 
 
-int sdliv::FileHandler::untrack(sdliv::FileHandler * fh)
+std::set<sdliv::FileHandler*>::iterator sdliv::FileHandler::untrack(std::set<sdliv::FileHandler*>::iterator fhIter)
 {
-
-	if (tracked_files.erase(fh) == 0)
-	{
-		log("sdliv::FileHandler::untrack() -- file not tracked");
-		return -1;
-	}
+	FileHandler* fh = *fhIter;
+	std::set<FileHandler*>::iterator iter = tracked_files.erase(fhIter);
 
 	if (fh != nullptr) delete fh;
 	fh = nullptr;
 
-	return 0;
+	return iter;
 }
 
 
@@ -164,6 +163,29 @@ void sdliv::FileHandler::addSupport(const std::string &extension)
 }
 
 
+std::filesystem::directory_entry sdliv::FileHandler::getWorkingDirectory()
+{
+	return workingDirectory;
+}
+
+int sdliv::FileHandler::setWorkingDirectory(std::filesystem::path path)
+{
+	std::filesystem::file_time_type lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
+	if (!std::filesystem::exists(path))
+	{
+		log("sdliv::FileHandler::setWorkingDirectory() -- directory does not exist:", path.string());
+		return -1;
+	}
+	workingDirectory = std::filesystem::directory_entry(path);
+	return 0;
+}
+
+int sdliv::FileHandler::setWorkingDirectory(std::string dir)
+{
+	std::filesystem::path d = std::filesystem::path(dir);
+	return setWorkingDirectory(d);
+}
+
 
 
 
@@ -171,19 +193,28 @@ int sdliv::FileHandler::openDirectory()
 {
 	int count = 0;
 
-	for (auto& f: std::filesystem::directory_iterator(std::filesystem::current_path()))
+	if (!std::filesystem::exists(workingDirectory))
 	{
-		if (f.is_regular_file())
+		log("sdliv::FileHandler::OpenDirectory() -- invalid directory");
+		return -1;
+	}
+	workingDirectory.refresh();
+	if (workingDirectory.last_write_time() > lastDirectoryWriteTime)
+	{
+		lastDirectoryWriteTime = workingDirectory.last_write_time();
+		for (auto& f : std::filesystem::directory_iterator(sdliv::FileHandler::workingDirectory))
 		{
-			FileHandler * fh = openFileIfSupported(f);
-
-			if (fh != nullptr)
+			if (f.is_regular_file())
 			{
-				count++;
+				FileHandler * fh = openFileIfSupported(f);
+
+				if (fh != nullptr)
+				{
+					count++;
+				}
 			}
 		}
 	}
-
 	return count;
 }
 
@@ -208,6 +239,12 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 
 
 	active_image->update();
+	if (active_image == nullptr)
+	{
+		//**FIXME** we have no valid image, display a placeholder?
+		log("sdliv::FileHandler::getActiveImage() -- no active images available");
+		return nullptr;
+	}
 
 	return active_image->element;
 }
@@ -218,6 +255,7 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 
 sdliv::Element * sdliv::FileHandler::nextImage()
 {
+	openDirectory();
 	if (tracked_files.size() == 0)
 	{
 		log("sdliv::FileHandler::nextImage() -- not tracking any files");
@@ -249,6 +287,7 @@ sdliv::Element * sdliv::FileHandler::nextImage()
 
 sdliv::Element * sdliv::FileHandler::prevImage()
 {
+	openDirectory();
 	if (tracked_files.size() == 0)
 	{
 		log("sdliv::FileHandler::prevImage() -- not tracking any files");
@@ -306,7 +345,7 @@ sdliv::FileHandler::FileHandler(const char * filename) : sdliv::FileHandler::Fil
 
 
 
-sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(std::filesystem::current_path() / filename))
+sdliv::FileHandler::FileHandler(const std::string & filename) : sdliv::FileHandler::FileHandler(std::filesystem::directory_entry(sdliv::FileHandler::workingDirectory / filename))
 {}
 
 
@@ -368,7 +407,7 @@ int sdliv::FileHandler::setTarget(const char * fn)
 int sdliv::FileHandler::setTarget(const std::string & fn)
 {
 	//filename is _not_ the full path
-	std::filesystem::path p = std::filesystem::current_path() / fn;
+	std::filesystem::path p = sdliv::FileHandler::workingDirectory.path() / fn;
 	return setTarget(std::filesystem::directory_entry(p));
 }
 
@@ -432,11 +471,27 @@ int sdliv::FileHandler::update()
 	std::filesystem::file_time_type timestamp = fs_entry.last_write_time();
 	if (!std::filesystem::exists(fs_entry))
 	{
+		// **FIXME** this assumes we want the next file, not the previous
 		log("sdliv::FileHandler::update() -- file no longer exists");
-		untrack(this);
-		//**FIXME** this will crash, need to update active_image
-		return 0;
+		std::set<FileHandler*>::iterator iter = tracked_files.find(this);
+		iter = untrack(iter);
+		if (iter == tracked_files.end())
+		{
+			if (iter == tracked_files.begin())
+			{
+				//**FIXME** we have no images left, return a placeholder ?
+				active_image = nullptr;
+				return -1;
+			}
+			iter = tracked_files.begin();
+		}
+		active_image = *(iter);
+
+		return active_image->update();
 	}
+	//**FIXME** what if file was deleted between exists() and refresh()?
+	// if refresh is first, .exists and .status cause crashes
+	// could check .exists, then .refresh, then .exists again, but thats a lot of OS calls.
 	fs_entry.refresh();
 	if (element == nullptr || fs_entry.last_write_time() > timestamp)
 	{

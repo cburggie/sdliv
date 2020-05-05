@@ -345,7 +345,13 @@ namespace sdliv
 			static int track(FileHandler * fh);
 
 			//stop tracking fh in tracked files
-			static int untrack(FileHandler * fh);
+			static std::set<FileHandler*>::iterator untrack(std::set<sdliv::FileHandler*>::iterator fhIter);
+
+			//timestamp of last directory modification
+			static std::filesystem::file_time_type lastDirectoryWriteTime;
+
+			//folder we're looking at for images
+			static std::filesystem::directory_entry workingDirectory;
 
 		public:
 			//return nullptr if unsupported file type
@@ -370,6 +376,10 @@ namespace sdliv
 			std::string getPathAsString() const;
 
 			static void addSupport(const std::string &extension);
+
+			static std::filesystem::directory_entry getWorkingDirectory();
+			static int setWorkingDirectory(std::filesystem::path);
+			static int setWorkingDirectory(std::string);
 
 
 		private:

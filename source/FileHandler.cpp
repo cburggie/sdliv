@@ -37,7 +37,7 @@ std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdli
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
-static std::filesystem::path workingPath = std::filesystem::path();
+std::filesystem::path sdliv::FileHandler::workingPath = std::filesystem::path();
 
 
 
@@ -181,7 +181,7 @@ int sdliv::FileHandler::setWorkingPath(std::filesystem::path path)
 int sdliv::FileHandler::setWorkingPath(std::string path)
 {
 	std::filesystem::path p = std::filesystem::path(p);
-	setWorkingPath(p);
+	return setWorkingPath(p);
 }
 
 

@@ -40,7 +40,7 @@ CC   = g++-8 ${COPT}
 
 OBJ  = ${BLD}/main.o
 OBJ += ${BLD}/util.o
-OBJ += ${BLD}/log.o
+#OBJ += ${BLD}/log.o
 OBJ += ${BLD}/constants.o
 OBJ += ${BLD}/App.o
 OBJ += ${BLD}/App_OnEvent.o

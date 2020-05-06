@@ -19,6 +19,7 @@ namespace sdliv {
 		inline ::std::string stringify(::std::string v) { return v; }
 		inline ::std::string stringify(const char *c) { return ::std::string(c); }
 		inline ::std::string stringify(int v) { return ::std::to_string(v); }
+		inline ::std::string stringify(bool v) { return ::std::string(v ? "true" : "false"); }
 
 		// fallback for unknown type, print the type name
 		template<typename T>

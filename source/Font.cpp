@@ -1,5 +1,4 @@
 #include <sdliv.h>
-#include <string>
 
 
 bool sdliv::Font::module_initialized = false;

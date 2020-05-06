@@ -349,9 +349,6 @@ namespace sdliv
 			//stop tracking fh in tracked files
 			static std::set<FileHandler*>::iterator untrack(std::set<sdliv::FileHandler*>::iterator fhIter);
 
-			//timestamp of last directory modification
-			static std::filesystem::file_time_type lastDirectoryWriteTime;
-
 			//folder we're looking at for images
 			static std::filesystem::directory_entry workingDirectory;
 
@@ -362,7 +359,7 @@ namespace sdliv
 			static FileHandler* openFileIfSupported(const std::filesystem::directory_entry & file);
 
 			//begin tracking all files in a directory
-			static int openDirectory();
+			static int openDirectory(bool force = true);
 
 			//get the Element object for the current active image file
 			static Element * getActiveImage();

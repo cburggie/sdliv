@@ -37,7 +37,6 @@ std::set<sdliv::FileHandler*, decltype(sdliv::FileHandler::setComparison)*> sdli
 
 sdliv::FileHandler * sdliv::FileHandler::active_image = nullptr;
 
-std::filesystem::file_time_type sdliv::FileHandler::lastDirectoryWriteTime = std::chrono::time_point<std::filesystem::_File_time_clock>();
 std::filesystem::directory_entry sdliv::FileHandler::workingDirectory = std::filesystem::directory_entry();
 
 
@@ -189,19 +188,25 @@ int sdliv::FileHandler::setWorkingDirectory(std::string dir)
 
 
 
-int sdliv::FileHandler::openDirectory()
+int sdliv::FileHandler::openDirectory(bool force)
 {
-	int count = 0;
-
 	if (!std::filesystem::exists(workingDirectory))
 	{
 		log("sdliv::FileHandler::OpenDirectory() -- invalid directory");
 		return -1;
 	}
-	workingDirectory.refresh();
-	if (workingDirectory.last_write_time() > lastDirectoryWriteTime)
+	if (!force)
 	{
-		lastDirectoryWriteTime = workingDirectory.last_write_time();
+		std::filesystem::file_time_type lastDirectoryWriteTime = workingDirectory.last_write_time();
+		workingDirectory.refresh();
+		if (workingDirectory.last_write_time() > lastDirectoryWriteTime)
+		{
+			force = true;
+		}
+	}
+	int count = 0;
+	if (force)
+	{
 		for (auto& f : std::filesystem::directory_iterator(sdliv::FileHandler::workingDirectory))
 		{
 			if (f.is_regular_file())
@@ -255,7 +260,7 @@ sdliv::Element * sdliv::FileHandler::getActiveImage()
 
 sdliv::Element * sdliv::FileHandler::nextImage()
 {
-	openDirectory();
+	openDirectory(false);
 	if (tracked_files.size() == 0)
 	{
 		log("sdliv::FileHandler::nextImage() -- not tracking any files");
@@ -287,7 +292,7 @@ sdliv::Element * sdliv::FileHandler::nextImage()
 
 sdliv::Element * sdliv::FileHandler::prevImage()
 {
-	openDirectory();
+	openDirectory(false);
 	if (tracked_files.size() == 0)
 	{
 		log("sdliv::FileHandler::prevImage() -- not tracking any files");

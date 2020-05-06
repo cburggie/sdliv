@@ -169,7 +169,6 @@ std::filesystem::directory_entry sdliv::FileHandler::getWorkingDirectory()
 
 int sdliv::FileHandler::setWorkingDirectory(std::filesystem::path path)
 {
-	lastDirectoryWriteTime = std::filesystem::file_time_type();
 	if (!std::filesystem::exists(path))
 	{
 		log("sdliv::FileHandler::setWorkingDirectory() -- directory does not exist:", path.string());

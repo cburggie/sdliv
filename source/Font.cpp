@@ -1,4 +1,5 @@
 #include <sdliv.h>
+#include <string>
 
 
 bool sdliv::Font::module_initialized = false;
@@ -81,10 +82,8 @@ sdliv::Font * sdliv::Font::openFont(Window * w, const char * path, int fs)
 
 	if (fp->font == nullptr)
 	{
-		std::string error = "sdliv::Font::openFont() failed at TTF_OpenFont()\n";
-		error += "\tpath was: ";
-		error += path;
-		log(error);
+		log("sdliv::Font::openFont() failed at TTF_OpenFont()");
+		log("\tpath was: ", path);
 
 		delete fp;
 		return nullptr;
